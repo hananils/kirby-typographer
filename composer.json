@@ -1,0 +1,22 @@
+{
+    "name": "hananils/kirby-typographer",
+    "description": "Kirby plugin to apply micro typography",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "hana+nils · Büro für Gestaltung",
+            "email": "buero@hananils.de"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hananils\\": "lib"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}

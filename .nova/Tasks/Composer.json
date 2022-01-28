@@ -1,0 +1,9 @@
+{
+  "actions" : {
+    "build" : {
+      "enabled" : true,
+      "script" : "composer install --no-dev"
+    }
+  },
+  "identifier" : "1D065E7A-C0D5-4D32-999C-92F9A8A205A3"
+}

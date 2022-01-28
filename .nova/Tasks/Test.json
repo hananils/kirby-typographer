@@ -1,0 +1,14 @@
+{
+  "actions" : {
+    "build" : {
+      "enabled" : true,
+      "script" : "composer install --dev"
+    },
+    "run" : {
+      "enabled" : true,
+      "script" : ".\/vendor\/bin\/phpunit tests --testdox --color=always"
+    }
+  },
+  "identifier" : "7E482A4A-0BBB-46BE-9C16-6736A056E540",
+  "openLogOnRun" : "start"
+}
