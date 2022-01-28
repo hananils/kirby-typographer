@@ -40,6 +40,16 @@ The programmer added: "Can we please make sure that my code stays intact?" Of co
 <p>The <span class="long-word">programmer</span> added: “Can we please make sure that my code stays intact?” Of course, we can: <code>$test = "This is text in straight quotes with ... dots"</code>.</p
 ```
 
+Typographer also allows for additional content manipulations:
+
+```php
+<?= $page->text()->typographer()->filter('p[1]') ?>
+```
+
+```html
+<p>“We are at 41° 43′ 32.99″”, said the captain while pointing on the map.</p>
+```
+
 ## Installation
 
 ### Download
