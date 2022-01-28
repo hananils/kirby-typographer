@@ -33,7 +33,7 @@ The programmer added: "Can we please make sure that my code stays intact?" Of co
 ```
 
 ```html
-<p>“We are at 41° 43′ 32.99″.” said the captain while pointing on the map.</p>
+<p>“We are at 41° 43′ 32.99″”, said the captain while pointing on the map.</p>
 
 <p lang="de">„Wir brauchen auch ‚Zitate in Zitaten‘ – nicht, dass das untergeht!“ ergänzte der Grafiker.</p>
 
