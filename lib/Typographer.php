@@ -14,6 +14,7 @@ use Hananils\Corrections\Ellipsis;
 use Hananils\Corrections\LongWords;
 use Hananils\Corrections\Math;
 use Hananils\Corrections\Primes;
+use Hananils\Corrections\Punctation;
 use Hananils\Corrections\Quotes;
 use Hananils\Corrections\Trademarks;
 use Hananils\Corrections\Widont;
@@ -32,6 +33,7 @@ class Typographer extends Document
         '\Hananils\Corrections\Quotes',
         '\Hananils\Corrections\Apostrophes',
         '\Hananils\Corrections\Primes',
+        '\Hananils\Corrections\Punctation',
         '\Hananils\Corrections\Ellipsis',
         '\Hananils\Corrections\Trademarks',
         '\Hananils\Corrections\Widont',

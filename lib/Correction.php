@@ -60,10 +60,13 @@ class Correction
         );
 
         foreach ($this->text() as $text) {
-            if (!empty($this->locales)) {
-                if (!in_array($this->findLocale($text), $this->locales)) {
-                    continue;
-                }
+            $this->findLocale($text);
+
+            if (
+                !empty($this->locales) &&
+                !$this->contextLocale->in($this->locales)
+            ) {
+                continue;
             }
 
             $text->textContent = preg_replace(

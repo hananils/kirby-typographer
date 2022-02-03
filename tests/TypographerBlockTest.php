@@ -138,6 +138,15 @@ class TypographerBlockTest extends PHPUnit\Framework\TestCase
             'trademarks' => [
                 '<p>(c) 2022 Test Company(tm), (r) alle Rechte vorbehalten</p>',
                 '<p>© 2022 Test Company™, ® alle Rechte <span class="long-word">vorbehalten</span></p>'
+            ],
+
+            /**
+             * French punctation
+             */
+            'french punctation' => [
+                '<p>"Ceci est une citation : il y a quelques signes de ponctuation !"</p>',
+                '<p>« Ceci est une citation : il y a quelques signes de <span class="long-word">ponctuation</span> ! »</p>',
+                'fr_FR'
             ]
         ];
     }

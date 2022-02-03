@@ -23,8 +23,8 @@ class Locale
             return false;
         }
 
-        $region = \Locale::getPrimaryLanguage($locale);
-        if (!$empty($region) && $region !== $this->region) {
+        $region = \Locale::getRegion($locale);
+        if (!empty($region) && $region !== $this->region) {
             return false;
         }
 
