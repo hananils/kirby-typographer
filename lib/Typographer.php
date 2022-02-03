@@ -28,18 +28,18 @@ class Typographer extends Document
 
     private $isCorrected = false;
     private $corrections = [
-        '\Hananils\Corrections\Dashes',
-        '\Hananils\Corrections\Math',
-        '\Hananils\Corrections\Quotes',
-        '\Hananils\Corrections\Apostrophes',
-        '\Hananils\Corrections\Primes',
-        '\Hananils\Corrections\Punctation',
-        '\Hananils\Corrections\Ellipsis',
-        '\Hananils\Corrections\Trademarks',
-        '\Hananils\Corrections\Widont',
-        '\Hananils\Corrections\Abbreviations',
-        '\Hananils\Corrections\LongWords',
-        '\Hananils\Corrections\Caps'
+        'dashes' => '\Hananils\Corrections\Dashes',
+        'math' => '\Hananils\Corrections\Math',
+        'quotes' => '\Hananils\Corrections\Quotes',
+        'apostrophes' => '\Hananils\Corrections\Apostrophes',
+        'primes' => '\Hananils\Corrections\Primes',
+        'punctation' => '\Hananils\Corrections\Punctation',
+        'ellipsis' => '\Hananils\Corrections\Ellipsis',
+        'trademarks' => '\Hananils\Corrections\Trademarks',
+        'widont' => '\Hananils\Corrections\Widont',
+        'abbreviations' => '\Hananils\Corrections\Abbreviations',
+        'longWords' => '\Hananils\Corrections\LongWords',
+        'caps' => '\Hananils\Corrections\Caps'
     ];
 
     public function __construct($locale = null)
@@ -49,35 +49,51 @@ class Typographer extends Document
         $this->setLocale($locale);
     }
 
-    public function parse($input)
+    public function __call($name, $arguments)
     {
-        $this->load($input);
-        $this->correct();
+        if (array_key_exists($name, $this->corrections)) {
+            $this->apply($this->corrections[$name]);
+        }
+
+        $this->isCorrected = true;
 
         return $this;
     }
 
-    public function correct()
+    public function parse($input)
+    {
+        $this->load($input);
+        $this->isCorrected = false;
+
+        return $this;
+    }
+
+    private function correct()
     {
         // Run correctors
         if ($this->document->childNodes->length > 0) {
             foreach ($this->corrections as $correction) {
-                $method = new $correction(
-                    $this->document,
-                    $this->locale,
-                    $this->ignored,
-                    $this->options
-                );
-
-                if ($method->hasFlow($this->flow)) {
-                    $method->apply();
-
-                    $this->document = $method->document();
-                }
+                $this->apply($correction);
             }
         }
 
         $this->isCorrected = true;
+    }
+
+    private function apply($correction)
+    {
+        $method = new $correction(
+            $this->document,
+            $this->locale,
+            $this->ignored,
+            $this->options
+        );
+
+        if ($method->hasFlow($this->flow)) {
+            $method->apply();
+
+            $this->document = $method->document();
+        }
     }
 
     public function toString()

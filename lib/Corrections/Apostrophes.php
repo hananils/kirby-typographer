@@ -25,7 +25,7 @@ class Apostrophes extends Correction
         "/ 'n' /im" => ' ’n’ ',
         "/'n'/im" => '’n’',
 
-        // shortened decades: the "’80s"
-        "/'(\d0s)/im" => '’$1'
+        // shortened decades: the "’80"
+        "/'(\d0)/im" => '’$1'
     ];
 }

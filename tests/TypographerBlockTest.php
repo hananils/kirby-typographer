@@ -48,7 +48,7 @@ class TypographerBlockTest extends PHPUnit\Framework\TestCase
                 '<p>Er rief: „Guck mal, es schneit!“</p><p>Sie sagte: „Guck mal, es schneit!“</p><p>Er meinte: „Es schneit.“</p><p>„Schau mal, es schneit!“, rief er.</p><p>„Schau mal, es schneit!“, sagte sie.</p><p>„Es schneit!“, meinte er.</p><p>„Zieh deine <span class="long-word">Winterjacke</span> an“, mahnte der Vater, „sonst wird dir kalt.“</p><p>Sie sagte: „Es schneit und mir ist kalt.“ – „Hast du deine <span class="long-word">Winterjacke</span> angezogen?“, fragte er.</p>',
                 'de-DE'
             ],
-            'direct speech (inseet) with German locale' => [
+            'direct speech (inset) with German locale' => [
                 '<p>"Da vorne", sagt Lello, "ist ja schon die Villa."</p>',
                 '<p>„Da vorne“, sagt Lello, „ist ja schon die Villa.“</p>',
                 'de-DE'

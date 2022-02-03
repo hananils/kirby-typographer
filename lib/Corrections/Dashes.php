@@ -11,7 +11,7 @@ class Dashes extends Correction
         '/ - /im' => Correction::NO_BREAK_SPACE . '– ',
 
         // m-dashes
-        '/ -- /im' => Correction::NO_BREAK_SPACE . '— ',
+        '/ -- /im' => Correction::NO_BREAK_SPACE . '– ',
 
         // ranges
         '/(\d)-(\d)/im' => '$1–$2'

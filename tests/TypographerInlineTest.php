@@ -48,7 +48,7 @@ class TypographerInlineTest extends PHPUnit\Framework\TestCase
                 'Er rief: „Guck mal, es schneit!“ Sie sagte: „Guck mal, es schneit!“ Er meinte: „Es schneit.“ „Schau mal, es schneit!“, rief er. „Schau mal, es schneit!“, sagte sie. „Es schneit!“, meinte er. „Zieh deine <span class="long-word">Winterjacke</span> an“, mahnte der Vater, „sonst wird dir kalt.“ „Sie sagte: „Es schneit und mir ist kalt.“ – „Hast du deine <span class="long-word">Winterjacke</span> angezogen?“, fragte er.',
                 'de-DE'
             ],
-            'direct speech (inseet) with German locale' => [
+            'direct speech (inset) with German locale' => [
                 '"Da vorne", sagt Lello, "ist ja schon die Villa."',
                 '„Da vorne“, sagt Lello, „ist ja schon die Villa.“',
                 'de-DE'
