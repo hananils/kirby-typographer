@@ -8,6 +8,6 @@ class Math extends Correction
 {
     public $replacements = [
         // times sign
-        '/ x /' => '&nbsp;× '
+        '/ x /' => Correction::NO_BREAK_SPACE . '× '
     ];
 }

@@ -12,6 +12,7 @@ class Abbreviations extends Correction
     public $locales = ['de', 'de_DE', 'de_AT', 'de_CH'];
     public $replacements = [
         // apostrophes at the end of a word
-        '/\b(\p{L}\.)\s?(?=\p{L}\.)/uim' => '$1&#8239;'
+        '/\b(\p{L}\.)\s?(?=\p{L}\.)/uim' =>
+            '$1' . Correction::NARROW_NO_BREAK_SPACE
     ];
 }

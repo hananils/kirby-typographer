@@ -18,14 +18,22 @@ class Widont extends Correction
 
             // Trailing whitespace
             if (substr($updated, -1) === ' ') {
-                $updated = $updated . '&nbsp;';
+                $updated = $updated . Correction::NO_BREAK_SPACE;
             } else {
                 $updated = $this->widont($updated);
             }
 
             // Make sure slashes break correctly
-            $updated = str_replace(' /&nbsp;', '&nbsp;/ ', $updated);
-            $updated = str_replace('/&nbsp;', '/ ', $updated);
+            $updated = str_replace(
+                ' /' . Correction::NO_BREAK_SPACE,
+                Correction::NO_BREAK_SPACE . '/ ',
+                $updated
+            );
+            $updated = str_replace(
+                '/' . Correction::NO_BREAK_SPACE,
+                '/ ',
+                $updated
+            );
 
             $last->textContent = html_entity_decode($updated);
         }
@@ -40,7 +48,7 @@ class Widont extends Correction
         $string = preg_replace_callback(
             '|(\S)\s(\S?)$|u',
             function ($matches) {
-                return $matches[1] . '&nbsp;' . $matches[2];
+                return $matches[1] . Correction::NO_BREAK_SPACE . $matches[2];
             },
             $string
         );
@@ -50,9 +58,13 @@ class Widont extends Correction
             '|(\s)(?=\S*$)(\S+)|u',
             function ($matches) {
                 if (stripos($matches[2], '-')) {
-                    $matches[2] = str_replace('-', '&#8209;', $matches[2]);
+                    $matches[2] = str_replace(
+                        '-',
+                        Correction::NON_BREAKING_HYPHEN,
+                        $matches[2]
+                    );
                 }
-                return '&nbsp;' . $matches[2];
+                return Correction::NO_BREAK_SPACE . $matches[2];
             },
             $string
         );

@@ -8,10 +8,10 @@ class Dashes extends Correction
 {
     public $replacements = [
         // n-dashes
-        '/ - /im' => '&nbsp;– ',
+        '/ - /im' => Correction::NO_BREAK_SPACE . '– ',
 
         // m-dashes
-        '/ -- /im' => '&nbsp;— ',
+        '/ -- /im' => Correction::NO_BREAK_SPACE . '— ',
 
         // ranges
         '/(\d)-(\d)/im' => '$1–$2'

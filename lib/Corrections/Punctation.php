@@ -12,6 +12,6 @@ class Punctation extends Correction
      */
     public $locales = ['fr_FR'];
     public $replacements = [
-        '/(\p{Zs})+(;|:|!|\?)/uim' => '&#8239;$2'
+        '/(\p{Zs})+(;|:|!|\?)/uim' => Correction::NARROW_NO_BREAK_SPACE . '$2'
     ];
 }

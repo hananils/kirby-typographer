@@ -9,7 +9,7 @@ class Trademarks extends Correction
     public $replacements = [
         '/\(tm\)/i' => '™',
         '/\(r\)/i' => '®',
-        '/\(c\)\p{Zs}(\d{4,})/ui' => '©&nbsp;$1',
+        '/\(c\)\p{Zs}(\d{4,})/ui' => '©' . Correction::NO_BREAK_SPACE . '$1',
         '/\(c\)/i' => '©'
     ];
 }

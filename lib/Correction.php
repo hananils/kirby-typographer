@@ -7,6 +7,10 @@ use Hananils\Locale;
 
 class Correction
 {
+    public const NO_BREAK_SPACE = '&#160;';
+    public const NARROW_NO_BREAK_SPACE = '&#8239;';
+    public const NON_BREAKING_HYPHEN = '&#8209;';
+
     protected $document;
     protected $locale;
     protected $ignored;
