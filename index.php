@@ -21,7 +21,15 @@ function typographer($html, $flow = 'block', $locale = null)
         }
     }
 
-    return $typographer->parse($html);
+    $typographer->parse($html);
+
+    if ($corrections = option('hananils.typographer.corrections', null)) {
+        if (is_array($corrections)) {
+            $typographer->setCorrections($corrections);
+        }
+    }
+
+    return $typographer;
 }
 
 Kirby::plugin('hananils/typographer', [
