@@ -16,6 +16,7 @@ return array(
     'Hananils\\Corrections\\LongWords' => $baseDir . '/lib/Corrections/LongWords.php',
     'Hananils\\Corrections\\Math' => $baseDir . '/lib/Corrections/Math.php',
     'Hananils\\Corrections\\Primes' => $baseDir . '/lib/Corrections/Primes.php',
+    'Hananils\\Corrections\\Punctation' => $baseDir . '/lib/Corrections/Punctation.php',
     'Hananils\\Corrections\\Quotes' => $baseDir . '/lib/Corrections/Quotes.php',
     'Hananils\\Corrections\\Trademarks' => $baseDir . '/lib/Corrections/Trademarks.php',
     'Hananils\\Corrections\\Widont' => $baseDir . '/lib/Corrections/Widont.php',

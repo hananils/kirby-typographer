@@ -31,6 +31,7 @@ class ComposerStaticInit9e564d1b96cf01cc5fb1feae1cd06e7b
         'Hananils\\Corrections\\LongWords' => __DIR__ . '/../..' . '/lib/Corrections/LongWords.php',
         'Hananils\\Corrections\\Math' => __DIR__ . '/../..' . '/lib/Corrections/Math.php',
         'Hananils\\Corrections\\Primes' => __DIR__ . '/../..' . '/lib/Corrections/Primes.php',
+        'Hananils\\Corrections\\Punctation' => __DIR__ . '/../..' . '/lib/Corrections/Punctation.php',
         'Hananils\\Corrections\\Quotes' => __DIR__ . '/../..' . '/lib/Corrections/Quotes.php',
         'Hananils\\Corrections\\Trademarks' => __DIR__ . '/../..' . '/lib/Corrections/Trademarks.php',
         'Hananils\\Corrections\\Widont' => __DIR__ . '/../..' . '/lib/Corrections/Widont.php',
