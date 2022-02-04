@@ -31,7 +31,6 @@ class CorrectionDashesTest extends PHPUnit\Framework\TestCase
     public function testCorrection($input, $expected, $locale = 'en-US')
     {
         $typographer = new Typographer($locale);
-        $typographer->setFlow('block');
 
         $this->assertSame(
             $expected,

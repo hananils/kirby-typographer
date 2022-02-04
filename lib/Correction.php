@@ -13,7 +13,7 @@ class Correction
 
     protected $document;
     protected $locale;
-    protected $ignored;
+    protected $ignore;
     protected $options;
     protected $xpath;
 
@@ -31,7 +31,7 @@ class Correction
     public function __construct(
         $document,
         $locale = 'en',
-        $ignored = ['pre', 'code'],
+        $ignore = ['pre', 'code'],
         $options = []
     ) {
         if (!is_a($locale, 'Hananils\Locale')) {
@@ -40,7 +40,7 @@ class Correction
 
         $this->document = $document;
         $this->locale = $locale;
-        $this->ignored = $ignored;
+        $this->ignore = $ignore;
         $this->options = $options;
 
         $this->xpath = new DOMXPath($this->document);
@@ -121,10 +121,10 @@ class Correction
         // General expression to find all text nodes
         $expression = '//text()';
 
-        // More precise expression, if specific nodes should be ignored
-        if ($this->ignored) {
+        // More precise expression, if specific nodes should be ignore
+        if ($this->ignore) {
             $ignore = [];
-            foreach ($this->ignored as $name) {
+            foreach ($this->ignore as $name) {
                 $ignore[] = 'ancestor::' . $name;
             }
             $expression = '//text()[not(' . implode(' or ', $ignore) . ')]';

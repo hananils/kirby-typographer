@@ -6,30 +6,33 @@ use Hananils\Typographer;
 
 function typographer($html, $flow = 'block', $locale = null)
 {
-    $typographer = new Typographer($locale);
-    $typographer->setFlow($flow);
-
     if ($locale === null) {
         if (kirby()->language()) {
-            $typographer->setLocale(
-                kirby()
-                    ->language()
-                    ->locale()
-            );
+            $locale = kirby()
+                ->language()
+                ->locale();
         } elseif (option('locale')) {
-            $typographer->setLocale(option('locale'));
+            $locale = option('locale');
         }
     }
 
-    $typographer->parse($html);
+    $typographer = new Typographer($locale, $flow);
 
+    // Set global corrections
     if ($corrections = option('hananils.typographer.corrections', null)) {
         if (is_array($corrections)) {
-            $typographer->setCorrections($corrections);
+            $typographer->corrections($corrections);
         }
     }
 
-    return $typographer;
+    // Set global options
+    if ($options = option('hananils.typographer.options', null)) {
+        if (is_array($options)) {
+            $typographer->options($options);
+        }
+    }
+
+    return $typographer->parse($html);
 }
 
 Kirby::plugin('hananils/typographer', [

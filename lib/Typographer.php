@@ -22,7 +22,7 @@ use Hananils\Corrections\Widont;
 class Typographer extends Document
 {
     protected $locale;
-    protected $ignored = ['pre', 'code'];
+    protected $ignore = ['pre', 'code'];
     protected $options = [];
     protected $flow = 'block';
 
@@ -42,22 +42,31 @@ class Typographer extends Document
         'caps' => '\Hananils\Corrections\Caps'
     ];
 
-    public function __construct($locale = null)
+    public function __construct($locale = null, $flow = 'block')
     {
         parent::__construct();
 
-        $this->setLocale($locale);
+        $this->locale = new Locale($locale);
+
+        if ($flow === 'inline') {
+            $this->flow = 'inline';
+        }
     }
 
     public function __call($name, $arguments)
     {
+        // Correction
         if (array_key_exists($name, $this->corrections)) {
             $this->apply($this->corrections[$name]);
+            $this->isCorrected = true;
         }
 
-        $this->isCorrected = true;
-
         return $this;
+    }
+
+    public function __debugInfo()
+    {
+        return $this->toArray();
     }
 
     public function parse($input)
@@ -68,16 +77,40 @@ class Typographer extends Document
         return $this;
     }
 
-    private function correct()
+    public function ignore(array $ignore = [])
     {
-        // Run correctors
-        if ($this->document->childNodes->length > 0) {
-            foreach ($this->corrections as $correction) {
-                $this->apply($correction);
+        $this->ignore = $ignore;
+
+        return $this;
+    }
+
+    public function corrections(array $corrections = [])
+    {
+        foreach ($corrections as $id => $correction) {
+            // Convert numeric ids to string so that correction can be
+            // called directly via magic method.
+            if (is_numeric($id)) {
+                $id = lcfirst(array_pop(explode('/', $string)));
             }
+
+            $this->corrections[$id] = $correction;
         }
 
-        $this->isCorrected = true;
+        return $this;
+    }
+
+    public function options(array $options = [])
+    {
+        $this->options = array_merge($this->options, $options);
+
+        return $this;
+    }
+
+    public function alternatives()
+    {
+        $this->options = ['alternatives' => true];
+
+        return $this;
     }
 
     private function apply($correction)
@@ -85,7 +118,7 @@ class Typographer extends Document
         $method = new $correction(
             $this->document,
             $this->locale,
-            $this->ignored,
+            $this->ignore,
             $this->options
         );
 
@@ -94,7 +127,37 @@ class Typographer extends Document
 
             $this->document = $method->document();
         }
+
+        $this->isCorrected = true;
     }
+
+    /**
+     * Status checks
+     */
+
+    public function isCorrected()
+    {
+        return $this->isCorrected === true;
+    }
+
+    public function isFiltered()
+    {
+        return isset($this->query);
+    }
+
+    public function isInline()
+    {
+        return $this->flow === 'inline';
+    }
+
+    public function isBlock()
+    {
+        return $this->flow === 'block';
+    }
+
+    /**
+     * Converters
+     */
 
     public function toString()
     {
@@ -105,25 +168,30 @@ class Typographer extends Document
 
         // Apply typography
         if ($this->isCorrected === false) {
-            $this->correct();
+            if ($this->document->childNodes->length > 0) {
+                foreach ($this->corrections as $correction) {
+                    $this->apply($correction);
+                }
+            }
         }
 
+        // Get nodes
         if ($this->query) {
+            // Filter content
             $this->xpath = new DOMXPath($this->document);
             $nodes = $this->xpath->query('//' . $this->query);
         } else {
-            // Get content parent
-            $parent = 'body';
+            // Inline text is wrapped in a paragraph automatically on load.
+            // There can only ever be one paragraph in the document in these
+            // cases, thus taking it as the parent will return the inline content
+            // needed for output.
             if ($this->flow === 'inline') {
-                // Inline text is wrapped in a paragraph automatically on load.
-                // There can only ever be one paragraph in the document in these
-                // cases, thus taking it as the parent will return the inline content
-                // needed for output.
-                $parent = 'p';
+                $parent = $this->document->getElementsByTagName('p');
+            } else {
+                $parent = $this->document->getElementsByTagName('body');
             }
 
-            $nodes = $this->document->getElementsByTagName($parent)->item(0)
-                ->childNodes;
+            $nodes = $parent->item(0)->childNodes;
         }
 
         // Get typographically corrected content
@@ -135,54 +203,22 @@ class Typographer extends Document
         return $content;
     }
 
-    public function setLocale($locale = 'en-US')
+    public function toArray()
     {
-        $this->locale = new Locale($locale);
+        return [
+            'locale' => $this->locale->toString(),
+            'ignore' => $this->ignore,
+            'flow' => $this->flow,
+            'corrections' => array_keys($this->corrections),
+            'options' => $this->options,
+            'corrected' => $this->isCorrected(),
+            'filtered' => $this->isFiltered()
+        ];
     }
 
-    public function getLocale()
+    public function toDocument()
     {
-        return $this->locale;
-    }
-
-    public function setFlow($flow = 'block')
-    {
-        $this->flow = $flow;
-    }
-
-    public function getFlow()
-    {
-        return $this->flow;
-    }
-
-    public function setIgnored(array $ignored = [])
-    {
-        $this->ignored = $ignored;
-    }
-
-    public function getIgnored()
-    {
-        return $this->ignored;
-    }
-
-    public function setCorrections(array $corrections = [])
-    {
-        $this->corrections = $corrections;
-    }
-
-    public function getCorrections()
-    {
-        return $this->corrections;
-    }
-
-    public function setOptions(array $options = [])
-    {
-        $this->options = array_merge($this->options, $options);
-    }
-
-    public function getOptions()
-    {
-        return $this->options;
+        return $this->document;
     }
 
     public function __toString()

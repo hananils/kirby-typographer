@@ -157,7 +157,6 @@ class TypographerBlockTest extends PHPUnit\Framework\TestCase
     public function testTypography($input, $expected, $locale = 'en-US')
     {
         $typographer = new Typographer($locale);
-        $typographer->setFlow('block');
 
         $this->assertSame($expected, $typographer->parse($input)->toString());
     }

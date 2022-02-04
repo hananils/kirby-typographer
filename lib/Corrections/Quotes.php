@@ -57,8 +57,8 @@ class Quotes extends Correction
 
     public function apply()
     {
-        if ($variant = $this->option('variant')) {
-            $this->locale->setVariant($variant);
+        if ($alternatives = $this->option('alternatives')) {
+            $this->locale->setAlternatives($alternatives);
         }
 
         $content = $this->document->documentElement->textContent;

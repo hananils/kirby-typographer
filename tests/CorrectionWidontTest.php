@@ -8,7 +8,7 @@ class CorrectionWidontTest extends PHPUnit\Framework\TestCase
 {
     public function testCorrection()
     {
-        $typographer = new Typographer();
+        $typographer = new Typographer('de_DE', 'inline');
         $typographer->setFlow('inline');
 
         $this->assertSame(
@@ -19,8 +19,7 @@ class CorrectionWidontTest extends PHPUnit\Framework\TestCase
                 ->toString()
         );
 
-        $typographer = new Typographer();
-        $typographer->setFlow('block');
+        $typographer = new Typographer('de_DE', 'block');
 
         $this->assertSame(
             '<p>Dies ist ein Satz.</p>',

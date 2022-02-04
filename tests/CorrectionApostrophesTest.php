@@ -52,8 +52,7 @@ class CorrectionApostrophesTest extends PHPUnit\Framework\TestCase
      */
     public function testCorrection($input, $expected, $locale = 'en-US')
     {
-        $typographer = new Typographer($locale);
-        $typographer->setFlow('inline');
+        $typographer = new Typographer($locale, 'inline');
 
         $this->assertSame(
             $expected,

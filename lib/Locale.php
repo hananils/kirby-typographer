@@ -6,14 +6,14 @@ class Locale
 {
     private $language = 'en';
     private $region = 'US';
-    private $variant = false;
+    private $alternatives = false;
     private $quotes = null;
 
-    public function __construct($locale, $variant = false)
+    public function __construct($locale, $alternatives = false)
     {
         $this->language = \Locale::getPrimaryLanguage($locale) ?? '';
         $this->region = \Locale::getRegion($locale) ?? '';
-        $this->variant = $variant;
+        $this->alternatives = $alternatives;
     }
 
     public function is($locale)
@@ -44,9 +44,9 @@ class Locale
         return $isIncluded;
     }
 
-    public function setVariant($variant)
+    public function setAlternatives($alternatives)
     {
-        $this->variant = $variant;
+        $this->alternatives = $alternatives;
         $this->setQuotes(true);
     }
 
@@ -66,7 +66,7 @@ class Locale
                 if ($this->region === 'CH') {
                     $this->quotes['single'] = ['‹', '›'];
                     $this->quotes['double'] = ['«', '»'];
-                } elseif ($this->variant === true) {
+                } elseif ($this->alternatives === true) {
                     $this->quotes['single'] = ['›', '‹'];
                     $this->quotes['double'] = ['»', '«'];
                 } else {
@@ -170,7 +170,7 @@ class Locale
         $string = $this->language;
 
         if ($this->region) {
-            $string += '-' . $this->region;
+            $string .= '-' . $this->region;
         }
 
         return $string;

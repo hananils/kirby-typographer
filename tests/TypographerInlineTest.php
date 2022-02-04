@@ -132,8 +132,7 @@ class TypographerInlineTest extends PHPUnit\Framework\TestCase
      */
     public function testTypography($input, $expected, $locale = 'en-US')
     {
-        $typographer = new Typographer($locale);
-        $typographer->setFlow('inline');
+        $typographer = new Typographer($locale, 'inline');
 
         $this->assertSame($expected, $typographer->parse($input)->toString());
     }
