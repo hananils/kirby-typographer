@@ -68,38 +68,32 @@ git submodule add https://github.com/hananils/kirby-typographer.git site/plugins
 composer require hananils/kirby-typographer
 ```
 
-# Usage
+# Methods
 
-Typographer is available via field, blocks and helper methods:
+Typographer is available as a field method as well as a blocks method.
 
-## typographer($flow, $convert)
+## $field->typographer($flow, $convert)
 
-Applies typographic rules to the given field. The `$flow` and `$convert` arguments are only available when used on a field, not on a blocks collection.
+Applies typographic rules to the given field.
 
 -   **`$flow`:** Determines whether the content is considered to be of block or inline flow. If no flow is set, the block or inline context is guessed from the field definition in the blueprint (this will reduce performance if used too often and on complex pages).
 -   **`$convert`** Determines whether the content should be converted to Markdown before applying typographic rules, respecting the flow setting. Defaults to `true`.
 
+## $blocks->typographer() or $block->typographer()
+
+Applies typographic rules to the blocks.
+
+## Manipulations
+
 There are several methods to fine-tune the output that can be chained with this main method:
 
-### setLocale($locale)
+### $field->typographer()->ignore($ignore)
 
-Sets the global locale to be used:
+Sets elements that should be ignore when applying typographic changes, especially helpful for code block.
 
--   **`$locale`:** The locale. Defaults to `en-US`.
+-   **`$ignore`:** Array of elements that should be skipped. Defaults to `['pre', 'code']`.
 
-### setFlow($flow)
-
-Sets the flow type:
-
--   **`$flow`:** The flow type, either `block` or `inline`. Defaults to `block`.
-
-### setIgnored($ignored)
-
-Sets elements that should be ignored when applying typographic changes, especially helpful for code block.
-
--   **`$ignored`:** Array of elements that should be skipped. Defaults to `['pre', 'code']`.
-
-### setAttributes($query, $attributes)
+### $field->typographer()->attributes($query, $attributes)
 
 Queries elements and sets the given attributes:
 
@@ -115,11 +109,9 @@ $page
     ]);
 ```
 
-### setAttribute($query, $name, $value)
+### $field->typographer()->attribute($query, $name, $value)
 
 Queries elements and sets a single attribute:
-
-Queries elements and sets the given attributes:
 
 -   **`$query`:** The xPath query to find the elements.
 -   **`$name`:** The attribute name.
@@ -132,7 +124,7 @@ $page
     ->setAttribute('p', 'class', 'typographic');
 ```
 
-### setName($query, $name)
+### $field->typographer()->rename($query, $name)
 
 Queries elements and changes their name:
 
@@ -146,7 +138,7 @@ $page
     ->setName('bold', 'strong');
 ```
 
-### level($level)
+### $field->typographer()->level($level)
 
 Changes the starting point of the headline hierarchy:
 
@@ -160,7 +152,7 @@ $page
     ->level(3);
 ```
 
-### filter($query)
+### $field->typographer()->filter($query)
 
 Filters the resulting markup by the given query:
 

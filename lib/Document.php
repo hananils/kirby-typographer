@@ -29,7 +29,7 @@ class Document
         libxml_use_internal_errors($internal);
     }
 
-    public function setAttributes($query, $attributes)
+    public function attributes($query, $attributes)
     {
         if (!$query || !$attributes) {
             return $this;
@@ -46,7 +46,7 @@ class Document
         return $this;
     }
 
-    public function setAttribute($query, $name, $value)
+    public function attribute($query, $name, $value)
     {
         if (!$query || !$name || !$value) {
             return $this;
@@ -59,7 +59,7 @@ class Document
         return $this;
     }
 
-    public function setName($query, $name)
+    public function rename($query, $name)
     {
         $nodes = $this->xpath->query('//' . $query);
 
