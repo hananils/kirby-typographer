@@ -169,12 +169,12 @@ class Correction
         return $this->document;
     }
 
-    public function option($key)
+    public function option($key, $fallback = null)
     {
-        if (isset($this->options[$key])) {
+        if (isset($this->options[$key]) && !empty($this->options[$key])) {
             return $this->options[$key];
         }
 
-        return null;
+        return $fallback;
     }
 }

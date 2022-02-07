@@ -11,8 +11,16 @@ class LongWords extends Correction
         'class' => 'long-word'
     ];
 
-    /**
-     * Words may contain unicode letters (\p{L}) and soft hyphens (\x{00AD}).
-     */
-    public $search = '/([\p{L}|\x{00AD}]{10,})/uim';
+    public function apply()
+    {
+        /**
+         * Words may contain unicode letters (\p{L}) and soft hyphens (\x{00AD}).
+         */
+        $this->search =
+            '/([\p{L}|\x{00AD}]{' .
+            $this->option('word-length', 15) .
+            ',})/uim';
+
+        $this->wrap();
+    }
 }
