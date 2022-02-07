@@ -93,7 +93,7 @@ Sets elements that should be ignore when applying typographic changes, especiall
 
 -   **`$ignore`:** Array of elements that should be skipped. Defaults to `['pre', 'code']`.
 
-### $field->typographer()->attributes($query, $attributes)
+### $field->typographer()->setAttributes($query, $attributes)
 
 Queries elements and sets the given attributes:
 
@@ -109,7 +109,7 @@ $page
     ]);
 ```
 
-### $field->typographer()->attribute($query, $name, $value)
+### $field->typographer()->setAttribute($query, $name, $value)
 
 Queries elements and sets a single attribute:
 
@@ -135,7 +135,7 @@ Queries elements and changes their name:
 $page
     ->text()
     ->typographer()
-    ->setName('bold', 'strong');
+    ->rename('bold', 'strong');
 ```
 
 ### $field->typographer()->level($level)

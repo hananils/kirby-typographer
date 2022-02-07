@@ -8,13 +8,11 @@ use DomXPath;
 class Document
 {
     protected $document;
-    protected $xpath;
     protected $query;
 
     public function __construct()
     {
         $this->document = new DomDocument();
-        $this->xpath = new DOMXPath($this->document);
     }
 
     protected function load($html)
@@ -29,13 +27,14 @@ class Document
         libxml_use_internal_errors($internal);
     }
 
-    public function attributes($query, $attributes)
+    public function setAttributes($query, $attributes)
     {
         if (!$query || !$attributes) {
             return $this;
         }
 
-        $nodes = $this->xpath->query('//body/' . $query);
+        $xpath = new DOMXPath($this->document);
+        $nodes = $xpath->query('//body/' . $query);
 
         foreach ($nodes as $node) {
             foreach ($attributes as $name => $value) {
@@ -46,7 +45,7 @@ class Document
         return $this;
     }
 
-    public function attribute($query, $name, $value)
+    public function setAttribute($query, $name, $value)
     {
         if (!$query || !$name || !$value) {
             return $this;
@@ -61,7 +60,8 @@ class Document
 
     public function rename($query, $name)
     {
-        $nodes = $this->xpath->query('//' . $query);
+        $xpath = new DOMXPath($this->document);
+        $nodes = $xpath->query('//' . $query);
 
         foreach ($nodes as $node) {
             $newNode = $this->document->createElement($name);
@@ -91,7 +91,7 @@ class Document
 
         if ($level > 1) {
             for ($i = 6; $i > 0; $i--) {
-                $this->setName('h' . $i, 'h' . min($i + $level - 1, 6));
+                $this->rename('h' . $i, 'h' . min($i + $level - 1, 6));
             }
         }
 
