@@ -85,6 +85,49 @@ class Document
         return $this;
     }
 
+    public function remove($query)
+    {
+        $xpath = new DOMXPath($this->document);
+        $nodes = $xpath->query('//' . $query);
+
+        foreach ($nodes as $node) {
+            $node->parentNode->removeChild($node);
+        }
+
+        return $this;
+    }
+
+    public function removeEmpty()
+    {
+        $voids = [
+            'area',
+            'base',
+            'br',
+            'col',
+            'embed',
+            'hr',
+            'img',
+            'input',
+            'link',
+            'meta',
+            'param',
+            'source',
+            'track',
+            'wbr'
+        ];
+
+        $xpath = new DOMXPath($this->document);
+        $nodes = $xpath->query('//*[not(normalize-space()) and not(*)]');
+
+        foreach ($nodes as $node) {
+            if (!in_array($node->localName, $voids)) {
+                $node->parentNode->removeChild($node);
+            }
+        }
+
+        return $this;
+    }
+
     public function level($level = 2)
     {
         $level = intval($level);
