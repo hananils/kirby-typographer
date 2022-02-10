@@ -4,6 +4,7 @@ namespace Hananils;
 
 use DomDocument;
 use DOMXPath;
+use Kirby\Toolkit\Str;
 use Hananils\Locale;
 
 use Hananils\Corrections\Abbreviations;
@@ -153,6 +154,15 @@ class Typographer extends Document
     public function isBlock()
     {
         return $this->flow === 'block';
+    }
+
+    /**
+     * Methods
+     */
+
+    public function excerpt($chars = 140, $strip = true, $rep = ' …')
+    {
+        return Str::excerpt($this->toString(), $chars, $strip, $rep);
     }
 
     /**
