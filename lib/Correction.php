@@ -76,7 +76,7 @@ class Correction
             $text->textContent = preg_replace(
                 $patterns,
                 $replacements,
-                $text->textContent
+                html_entity_decode($text->textContent)
             );
         }
     }
