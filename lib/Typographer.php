@@ -216,7 +216,7 @@ class Typographer extends Document
         return $content;
     }
 
-    public function toText($boundary = null, $ellipsis = '&#160;…')
+    public function toText($boundary = null, $ellipsis = '&nbsp;…')
     {
         // Handle empty documents
         if (!trim($this->document->textContent)) {
@@ -262,10 +262,25 @@ class Typographer extends Document
         $this->parse($text);
         $this->process();
 
-        // Trim text, remove orphaned punctation
-        $text = trim($this->document->textContent, " \n\r\t\v\x00-–,;:");
+        // Trim text
+        $text = trim($this->document->textContent);
 
-        return $text . $ellipsis;
+        // Shorten text if required
+        if ($boundary > 0) {
+            // Remove orphaned punctation
+            $text = trim($text, '-–,;:');
+            $text .= $ellipsis;
+
+            // Remove orphaned words after shortening,
+            // e. g. removes "It …" from "The summary. It …"
+            $text = preg_replace(
+                '/([.?!])\p{Zs}\p{L}+' . $ellipsis . '$/uim',
+                '$1',
+                $text
+            );
+        }
+
+        return $text;
     }
 
     public function toArray()
