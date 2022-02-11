@@ -114,6 +114,17 @@ class Typographer extends Document
         return $this;
     }
 
+    private function process()
+    {
+        if ($this->isCorrected === false) {
+            if ($this->document->childNodes->length > 0) {
+                foreach ($this->corrections as $correction) {
+                    $this->apply($correction);
+                }
+            }
+        }
+    }
+
     private function apply($correction)
     {
         $method = new $correction(
@@ -130,6 +141,29 @@ class Typographer extends Document
         }
 
         $this->isCorrected = true;
+    }
+
+    private function getNodes()
+    {
+        if ($this->query) {
+            // Filter content
+            $this->xpath = new DOMXPath($this->document);
+            $nodes = $this->xpath->query('//' . $this->query);
+        } else {
+            // Inline text is wrapped in a paragraph automatically on load.
+            // There can only ever be one paragraph in the document in these
+            // cases, thus taking it as the parent will return the inline content
+            // needed for output.
+            if ($this->flow === 'inline') {
+                $parent = $this->document->getElementsByTagName('p');
+            } else {
+                $parent = $this->document->getElementsByTagName('body');
+            }
+
+            $nodes = $parent->item(0)->childNodes;
+        }
+
+        return $nodes;
     }
 
     /**
@@ -157,19 +191,10 @@ class Typographer extends Document
     }
 
     /**
-     * Methods
-     */
-
-    public function excerpt($chars = 140, $strip = true, $rep = ' …')
-    {
-        return Str::excerpt($this->toString(), $chars, $strip, $rep);
-    }
-
-    /**
      * Converters
      */
 
-    public function toString()
+    public function toHtml()
     {
         // Handle empty documents
         if (!trim($this->document->textContent)) {
@@ -177,32 +202,10 @@ class Typographer extends Document
         }
 
         // Apply typography
-        if ($this->isCorrected === false) {
-            if ($this->document->childNodes->length > 0) {
-                foreach ($this->corrections as $correction) {
-                    $this->apply($correction);
-                }
-            }
-        }
+        $this->process();
 
         // Get nodes
-        if ($this->query) {
-            // Filter content
-            $this->xpath = new DOMXPath($this->document);
-            $nodes = $this->xpath->query('//' . $this->query);
-        } else {
-            // Inline text is wrapped in a paragraph automatically on load.
-            // There can only ever be one paragraph in the document in these
-            // cases, thus taking it as the parent will return the inline content
-            // needed for output.
-            if ($this->flow === 'inline') {
-                $parent = $this->document->getElementsByTagName('p');
-            } else {
-                $parent = $this->document->getElementsByTagName('body');
-            }
-
-            $nodes = $parent->item(0)->childNodes;
-        }
+        $nodes = $this->getNodes();
 
         // Get typographically corrected content
         $content = '';
@@ -211,6 +214,58 @@ class Typographer extends Document
         }
 
         return $content;
+    }
+
+    public function toText($boundary = null, $ellipsis = '&#160;…')
+    {
+        // Handle empty documents
+        if (!trim($this->document->textContent)) {
+            return '';
+        }
+
+        // Get nodes
+        $nodes = $this->getNodes();
+
+        // Get typographically corrected content
+        $text = '';
+        foreach ($nodes as $node) {
+            // Collapse whitespace
+            $content = trim(
+                preg_replace('/(\r|\n|\t|\p{Zs})+/', ' ', $node->textContent)
+            );
+
+            if (!$content) {
+                continue;
+            }
+
+            $text .= ' ' . $content;
+        }
+
+        // Shorten text if required
+        if ($boundary > 0) {
+            $words = explode(' ', $text);
+            $text = '';
+            $length = -1;
+
+            foreach ($words as $word) {
+                $length = $length + mb_strlen($word) + 1;
+
+                if ($length > $boundary) {
+                    break;
+                }
+
+                $text .= ' ' . $word;
+            }
+        }
+
+        // Apply typography
+        $this->parse($text);
+        $this->process();
+
+        // Trim text, remove orphaned punctation
+        $text = trim($this->document->textContent, " \n\r\t\v\x00-–,;:");
+
+        return $text . $ellipsis;
     }
 
     public function toArray()
@@ -233,6 +288,6 @@ class Typographer extends Document
 
     public function __toString()
     {
-        return $this->toString();
+        return $this->toHtml();
     }
 }
