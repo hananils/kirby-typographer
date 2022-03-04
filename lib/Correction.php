@@ -109,10 +109,10 @@ class Correction
                     $node = $this->document->createTextNode($part);
                 }
 
-                $text->parentNode->insertBefore($node, $text);
+                $parent->insertBefore($node, $text);
             }
 
-            $text->parentNode->removeChild($text);
+            $parent->removeChild($text);
         }
     }
 
@@ -131,7 +131,7 @@ class Correction
             foreach ($this->ignore as $name) {
                 $ignore[] = 'ancestor::' . $name;
             }
-            $expression = '//text()[not(' . implode(' or ', $ignore) . ')]';
+            $expression .= '[not(' . implode(' or ', $ignore) . ')]';
         }
 
         // Get text nodes
