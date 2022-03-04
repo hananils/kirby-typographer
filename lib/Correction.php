@@ -87,6 +87,13 @@ class Correction
 
         foreach ($this->text() as $text) {
             $content = $text->textContent;
+            $parent = $text->parentNode;
+
+            // Skip text that is already wrapped
+            if ($parent->nodeName === $this->wrapper) {
+                continue;
+            }
+
             $parts = preg_split(
                 $this->search,
                 $content,
