@@ -15,7 +15,6 @@ class Correction
     protected $locale;
     protected $ignore;
     protected $options;
-    protected $xpath;
 
     private $text = null;
     protected $contextLocale;
@@ -42,8 +41,6 @@ class Correction
         $this->locale = $locale;
         $this->ignore = $ignore;
         $this->options = $options;
-
-        $this->xpath = new DOMXPath($this->document);
     }
 
     public function apply()
@@ -131,7 +128,8 @@ class Correction
         }
 
         // Get text nodes
-        $this->text = $this->xpath->query($expression);
+        $xpath = new DOMXPath($this->document);
+        $this->text = $xpath->query($expression);
 
         return $this->text;
     }
@@ -149,7 +147,8 @@ class Correction
 
     public function findLocale($text)
     {
-        $parent = $this->xpath->query('ancestor::*[@lang][1]', $text);
+        $xpath = new DOMXPath($this->document);
+        $parent = $xpath->query('ancestor::*[@lang][1]', $text);
 
         if ($parent->length) {
             $this->contextLocale = new Locale(

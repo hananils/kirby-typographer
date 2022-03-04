@@ -3,6 +3,7 @@
 namespace Hananils\Corrections;
 
 use Hananils\Correction;
+use DOMXPath;
 
 class Widont extends Correction
 {
@@ -10,7 +11,8 @@ class Widont extends Correction
 
     public function apply()
     {
-        $text = $this->xpath->query('//text()[contains(., " ")]');
+        $xpath = new DOMXPath($this->document);
+        $text = $xpath->query('//text()[contains(., " ")]');
         $last = $text->item($text->length - 1);
 
         if ($last) {
