@@ -17,7 +17,7 @@ class LongWords extends Correction
          * Words may contain unicode letters (\p{L}) and soft hyphens (\x{00AD}).
          */
         $this->search =
-            '/([\p{L}|\x{00AD}]{' .
+            '/([\p{L}|\x{00AD}|\p{P}]{' .
             $this->option('word-length', 15) .
             ',})/uim';
 
