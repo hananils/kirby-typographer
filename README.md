@@ -199,6 +199,7 @@ Actually, all that's need is hyphenation on long words that might overflow. Thus
     hyphens: auto:
     -ms-hyphens: auto; /* IE */
     -webkit-hyphens: auto; /* Safari + Safari iOS */
+    word-break: break-word; /* Safari iOS */
 }
 ```
 
