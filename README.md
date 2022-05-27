@@ -197,6 +197,8 @@ Actually, all that's need is hyphenation on long words that might overflow. Thus
 ```css
 .long-word {
     hyphens: auto:
+    -ms-hyphens: auto; /* IE */
+    -webkit-hyphens: auto; /* Safari + Safari iOS */
 }
 ```
 
