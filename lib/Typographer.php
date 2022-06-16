@@ -107,9 +107,9 @@ class Typographer extends Document
         return $this;
     }
 
-    public function alternatives()
+    public function alternatives($alternatives = true)
     {
-        $this->options = ['alternatives' => true];
+        $this->options = ['alternatives' => $alternatives];
 
         return $this;
     }

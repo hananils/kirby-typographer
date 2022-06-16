@@ -66,7 +66,10 @@ class Locale
                 if ($this->region === 'CH') {
                     $this->quotes['single'] = ['‹', '›'];
                     $this->quotes['double'] = ['«', '»'];
-                } elseif ($this->alternatives === true) {
+                } elseif (
+                    $this->alternatives === true ||
+                    $this->alternatives === 'guillemets'
+                ) {
                     $this->quotes['single'] = ['›', '‹'];
                     $this->quotes['double'] = ['»', '«'];
                 } else {
