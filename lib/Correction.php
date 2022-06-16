@@ -162,8 +162,8 @@ class Correction
                 $parent->item(0)->attributes->getNamedItem('lang')->nodeValue
             );
 
-            if ($variant = $this->option('variant')) {
-                $this->contextLocale->setVariant($variant);
+            if ($variant = $this->option('alternatives')) {
+                $this->contextLocale->setAlternatives($variant);
             }
         } else {
             $this->contextLocale = $this->locale;
