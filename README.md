@@ -166,6 +166,14 @@ $page
     ->filter('p[1]');
 ```
 
+### $field->typographer()->options($options)
+
+Set options for the correction:
+
+-   **`$options`:** An array of options to be passed to the corrections.
+
+See below for additional information.
+
 # Additional field methods
 
 ## toDefinition()
@@ -198,6 +206,66 @@ Actually, all that's need is hyphenation on long words that might overflow. Thus
 .long-word {
     hyphens: auto:
 }
+```
+
+Depending on your requirements, [vendor prefixes are needed to enable hyphenation](https://caniuse.com/?search=hyphen) in all browsers. Please also make sure to set the current language on your HTML nodes so that the correct dictionary is used by the browser. This can be done by specifying `lang` on your root `html` node, e. g. `<html lang="de">…</html>`.
+
+# Options
+
+Some corrections accept options for their transformations. You can either set options individually by calling the `options` method on the typographer object (see above) or you can define options globally by adding them to the Kirby configuration:
+
+```php
+'hananils.typographer' => [
+  'options' => [
+    // your options here
+  ]
+]
+```
+
+## Quotes
+
+For the German language, the quotes correction allows you to toggle alternative quotes, known as "französische Anführungszeichen" or "Guillemets", instead of the usual "Gänsefüßchen":
+
+```php
+'hananils.typographer' => [
+  'options' => [
+    'alternatives' => true // or 'guillemets' if you want to be more specific
+  ]
+]
+```
+
+You can also pass this to you Typographer object directly:
+
+```php
+$page
+    ->text()
+    ->typographer()
+    ->options([
+        'alternatives' => true
+    ]);
+```
+
+## Long words
+
+The correction that enables hyphenation of long words accepts an option for the word length. This is the minimum character count used to find long words:
+
+```php
+'hananils.typographer' => [
+  'options' => [
+    'word-length' => 10 // the default is 15
+  ]
+]
+```
+
+You can also pass this to you Typographer object directly:
+
+```php
+$page
+    ->text()
+    ->typographer()
+    ->options([
+        'word-length' => 10
+    ]);
 ```
 
 # Inspiration and similar approaches
