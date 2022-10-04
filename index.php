@@ -102,7 +102,9 @@ Kirby::plugin('hananils/typographer', [
             // Convert field value to HTML
             $text = $kirby->apply('kirbytext:before', compact('text'), 'text');
             $text = $kirby->kirbytags($text, $data);
-            $text = $kirby->markdown($text, $flow === 'inline');
+            $text = $kirby->markdown($text, [
+                'inline' => $flow === 'inline'
+            ]);
             $text = $kirby->apply('kirbytext:after', compact('text'), 'text');
 
             return $text;
