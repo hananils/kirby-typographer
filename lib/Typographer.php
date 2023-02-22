@@ -40,7 +40,8 @@ class Typographer extends Document
         'widont' => '\Hananils\Corrections\Widont',
         'abbreviations' => '\Hananils\Corrections\Abbreviations',
         'longWords' => '\Hananils\Corrections\LongWords',
-        'caps' => '\Hananils\Corrections\Caps'
+        'caps' => '\Hananils\Corrections\Caps',
+        'lists' => '\Hananils\Corrections\Lists'
     ];
 
     public function __construct($locale = null, $flow = 'block')
