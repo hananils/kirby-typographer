@@ -23,7 +23,7 @@ use Hananils\Corrections\Widont;
 class Typographer extends Document
 {
     protected $locale;
-    protected $ignore = ['pre', 'code'];
+    protected $ignore = ['pre', 'code', 'script', 'style'];
     protected $options = [];
     protected $flow = 'block';
 
