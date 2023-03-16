@@ -12,7 +12,7 @@ class Lists extends Correction
     public function apply()
     {
         $xpath = new DOMXPath($this->document);
-        $lists = $xpath->query('//ul');
+        $lists = $xpath->query('//ul' . $this->createAncestorCondition());
 
         foreach ($lists as $list) {
             $content = '';

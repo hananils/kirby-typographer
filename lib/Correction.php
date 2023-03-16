@@ -116,7 +116,7 @@ class Correction
         }
     }
 
-    public function text()
+    public function text(string $condition = '')
     {
         if ($this->text !== null) {
             return $this->text;
@@ -126,19 +126,31 @@ class Correction
         $expression = '//text()';
 
         // More precise expression, if specific nodes should be ignore
-        if ($this->ignore) {
-            $ignore = [];
-            foreach ($this->ignore as $name) {
-                $ignore[] = 'ancestor::' . $name;
-            }
-            $expression .= '[not(' . implode(' or ', $ignore) . ')]';
-        }
+        $expression .= $this->createAncestorCondition();
+        $expression .= $condition;
 
         // Get text nodes
         $xpath = new DOMXPath($this->document);
         $this->text = $xpath->query($expression);
 
         return $this->text;
+    }
+
+    public function createAncestorCondition()
+    {
+        $condition = '';
+
+        if ($this->ignore) {
+            $ignore = [];
+
+            foreach ($this->ignore as $name) {
+                $ignore[] = 'ancestor::' . $name;
+            }
+
+            $condition = '[not(' . implode(' or ', $ignore) . ')]';
+        }
+
+        return $condition;
     }
 
     public function hasFlow($flow)

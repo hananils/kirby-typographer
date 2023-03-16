@@ -11,8 +11,7 @@ class Widont extends Correction
 
     public function apply()
     {
-        $xpath = new DOMXPath($this->document);
-        $text = $xpath->query('//text()[contains(., " ")]');
+        $text = $this->text('[contains(., " ")]');
         $last = $text->item($text->length - 1);
 
         if ($last) {
