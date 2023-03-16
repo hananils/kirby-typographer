@@ -146,6 +146,8 @@ class Typographer extends Document
 
     private function getNodes()
     {
+        $nodes = null;
+
         if ($this->query) {
             // Filter content
             $this->xpath = new DOMXPath($this->document);
@@ -161,7 +163,9 @@ class Typographer extends Document
                 $parent = $this->document->getElementsByTagName('body');
             }
 
-            $nodes = $parent->item(0)->childNodes;
+            if ($parent && $parent->count()) {
+                $nodes = $parent->item(0)->childNodes;
+            }
         }
 
         return $nodes;
@@ -197,11 +201,6 @@ class Typographer extends Document
 
     public function toHtml()
     {
-        // Handle empty documents
-        if (!trim($this->document->textContent)) {
-            return '';
-        }
-
         // Apply typography
         $this->process();
 
@@ -210,8 +209,10 @@ class Typographer extends Document
 
         // Get typographically corrected content
         $content = '';
-        foreach ($nodes as $node) {
-            $content .= $this->document->saveHTML($node);
+        if ($nodes) {
+            foreach ($nodes as $node) {
+                $content .= $this->document->saveHTML($node);
+            }
         }
 
         return $content;
