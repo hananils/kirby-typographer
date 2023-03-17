@@ -44,7 +44,7 @@ class Typographer extends Document
         'lists' => '\Hananils\Corrections\Lists'
     ];
 
-    public function __construct($locale = null, $flow = 'block')
+    public function __construct($locale = 'en', $flow = 'block')
     {
         parent::__construct();
 
