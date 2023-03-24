@@ -10,7 +10,7 @@ function typographer($html, $flow = 'block', $locale = null)
         if (kirby()->language()) {
             $locale = kirby()
                 ->language()
-                ->locale();
+                ->locale(LC_ALL);
         } elseif (option('locale')) {
             $locale = option('locale');
         }
