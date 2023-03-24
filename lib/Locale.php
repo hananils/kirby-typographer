@@ -9,7 +9,7 @@ class Locale
     private $alternatives = false;
     private $quotes = null;
 
-    public function __construct($locale, $alternatives = false)
+    public function __construct($locale = 'en', $alternatives = false)
     {
         $this->language = \Locale::getPrimaryLanguage($locale) ?? '';
         $this->region = \Locale::getRegion($locale) ?? '';
