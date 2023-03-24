@@ -141,6 +141,11 @@ class Document
         return $this;
     }
 
+    public function offset($position = 0)
+    {
+        return $this->filter('/html/body/*[position() > ' . $position . ']');
+    }
+
     public function filter($query)
     {
         $this->query = $query;
