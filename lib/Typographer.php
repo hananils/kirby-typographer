@@ -150,8 +150,12 @@ class Typographer extends Document
 
         if ($this->query) {
             // Filter content
-            $this->xpath = new DOMXPath($this->document);
-            $nodes = $this->xpath->query('//' . $this->query);
+            $xpath = new DOMXPath($this->document);
+            if (strpos($this->query, '/') === 0) {
+                $nodes = $xpath->query($this->query);
+            } else {
+                $nodes = $xpath->query('//' . $this->query);
+            }
         } else {
             // Inline text is wrapped in a paragraph automatically on load.
             // There can only ever be one paragraph in the document in these
