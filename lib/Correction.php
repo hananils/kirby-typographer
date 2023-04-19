@@ -30,7 +30,7 @@ class Correction
     public function __construct(
         $document,
         $locale = 'en',
-        $ignore = ['pre', 'code'],
+        $ignore = ['pre', 'code', 'script', 'style'],
         $options = []
     ) {
         if (!is_a($locale, 'Hananils\Locale')) {
