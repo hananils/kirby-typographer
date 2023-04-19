@@ -144,37 +144,6 @@ class Typographer extends Document
         $this->isCorrected = true;
     }
 
-    private function getNodes()
-    {
-        $nodes = null;
-
-        if ($this->query) {
-            // Filter content
-            $xpath = new DOMXPath($this->document);
-            if (strpos($this->query, '/') === 0) {
-                $nodes = $xpath->query($this->query);
-            } else {
-                $nodes = $xpath->query('//' . $this->query);
-            }
-        } else {
-            // Inline text is wrapped in a paragraph automatically on load.
-            // There can only ever be one paragraph in the document in these
-            // cases, thus taking it as the parent will return the inline content
-            // needed for output.
-            if ($this->flow === 'inline') {
-                $parent = $this->document->getElementsByTagName('p');
-            } else {
-                $parent = $this->document->getElementsByTagName('body');
-            }
-
-            if ($parent && $parent->count()) {
-                $nodes = $parent->item(0)->childNodes;
-            }
-        }
-
-        return $nodes;
-    }
-
     /**
      * Status checks
      */
