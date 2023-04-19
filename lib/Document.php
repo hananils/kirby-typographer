@@ -143,12 +143,25 @@ class Document
 
     public function offset($position = 0)
     {
-        return $this->filter('/html/body/*[position() > ' . $position . ']');
+        return $this->filter('/*[position() > ' . $position . ']');
+    }
+
+    public function limit($position = 0)
+    {
+        return $this->filter('/*[position() <= ' . $position . ']');
     }
 
     public function filter($query)
     {
-        $this->query = $query;
+        if (!$this->query) {
+            $this->query = '/html/body';
+        }
+
+        if (strpos($query, '/') === false) {
+            $this->query .= '/';
+        }
+
+        $this->query .= $query;
 
         return $this;
     }
