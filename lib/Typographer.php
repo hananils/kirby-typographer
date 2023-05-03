@@ -178,7 +178,7 @@ class Typographer extends Document
         $this->process();
 
         // Get nodes
-        $nodes = $this->getNodes();
+        $nodes = $this->getNodes($this->flow);
 
         // Get typographically corrected content
         $content = '';
@@ -199,7 +199,7 @@ class Typographer extends Document
         }
 
         // Get nodes
-        $nodes = $this->getNodes();
+        $nodes = $this->getNodes($this->flow);
 
         // Get typographically corrected content
         $text = '';

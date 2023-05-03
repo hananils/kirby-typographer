@@ -166,7 +166,7 @@ class Document
         return $this;
     }
 
-    public function getNodes()
+    public function getNodes($flow = 'block')
     {
         $nodes = null;
 
@@ -179,8 +179,14 @@ class Document
             // There can only ever be one paragraph in the document in these
             // cases, thus taking it as the parent will return the inline content
             // needed for output.
-            if ($this->flow === 'inline') {
+            if ($flow === 'inline') {
                 $parent = $this->document->getElementsByTagName('p');
+
+                // This is true unless the text started with an inline element
+                // like <strong> or <em>.
+                if (!$parent->length) {
+                    $parent = $this->document->getElementsByTagName('body');
+                }
             } else {
                 $parent = $this->document->getElementsByTagName('body');
             }
