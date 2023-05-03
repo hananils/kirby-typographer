@@ -92,7 +92,7 @@ class Typographer extends Document
             // Convert numeric ids to string so that correction can be
             // called directly via magic method.
             if (is_numeric($id)) {
-                $id = lcfirst(array_pop(explode('/', $string)));
+                $id = lcfirst(array_pop(explode('/', $correction)));
             }
 
             $this->corrections[$id] = $correction;
