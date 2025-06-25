@@ -2,6 +2,10 @@
 
 **Typographer** is a plugin for [Kirby 3](https://getkirby.com) to apply microtypographic rules to texts. It used `DomDocument` under the hood to understand the semantic of the given text and respecting `lang` attributes to adjust the used locale contextually.
 
+> [!NOTE]
+> **There is a large update coming for Kirby 5 this fall:**  
+> Please check out [kirby.hananils.de/plugins/typographer](https://kirby.hananils.de/plugins/typographer) for further information.
+
 Typographer applies the following corrections:
 
 -   opening and closing quotes (primary and secondary)
