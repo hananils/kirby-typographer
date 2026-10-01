@@ -11,13 +11,13 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:hananils/document.git",
-                "reference": "df07fcdf1ead5166c4925028da7bdee011aeef46"
+                "url": "https://github.com/hananils/document.git",
+                "reference": "9d3c01ca9d9eac2f9bc732e84856983e74ec2203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hananils/document/zipball/df07fcdf1ead5166c4925028da7bdee011aeef46",
-                "reference": "df07fcdf1ead5166c4925028da7bdee011aeef46",
+                "url": "https://api.github.com/repos/hananils/document/zipball/9d3c01ca9d9eac2f9bc732e84856983e74ec2203",
+                "reference": "9d3c01ca9d9eac2f9bc732e84856983e74ec2203",
                 "shasum": ""
             },
             "require": {
@@ -41,17 +41,17 @@
             ],
             "description": "HTML documents",
             "support": {
-                "source": "https://github.com/hananils/document/tree/2.0.0",
+                "source": "https://github.com/hananils/document/tree/main",
                 "issues": "https://github.com/hananils/document/issues"
             },
-            "time": "2026-10-01T07:33:46+00:00"
+            "time": "2026-10-01T10:41:41+00:00"
         },
         {
             "name": "hananils/kirby-fields",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:hananils/kirby-fields.git",
+                "url": "https://github.com/hananils/kirby-fields.git",
                 "reference": "d32d18c330faa503dff54fc66e12ac9b98782749"
             },
             "dist": {
@@ -88,7 +88,7 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:hananils/kirby-plugins.git",
+                "url": "https://github.com/hananils/kirby-plugins.git",
                 "reference": "8a6379b185df611cf2acfe705182a14777b7e2c9"
             },
             "dist": {

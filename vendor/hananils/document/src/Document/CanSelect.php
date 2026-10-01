@@ -58,7 +58,9 @@ trait CanSelect
         $nodes = new Nodes();
 
         if ($node === null) {
-            $node = $this->document;
+            $node = is_a($this, 'Hananils\Document\Node')
+                ? $this->item()
+                : $this->document;
         }
 
         if ($result = $node->querySelectorAll($expression)) {
@@ -77,10 +79,6 @@ trait CanSelect
         string $expression,
         Element|null $node = null
     ): Node|null {
-        if ($node === null && is_a($this, 'Hananils\Document\Node')) {
-            $node = $this->item();
-        }
-
         if ($nodes = $this->querySelectorAll($expression, $node)) {
             return $nodes->first();
         }

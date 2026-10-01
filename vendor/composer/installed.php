@@ -13,7 +13,7 @@
         'hananils/document' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'df07fcdf1ead5166c4925028da7bdee011aeef46',
+            'reference' => '9d3c01ca9d9eac2f9bc732e84856983e74ec2203',
             'type' => 'library',
             'install_path' => __DIR__ . '/../hananils/document',
             'aliases' => array(
