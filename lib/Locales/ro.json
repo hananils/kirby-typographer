@@ -1,0 +1,10 @@
+{
+    "name": "Romanian",
+    "code": "ro",
+    "quotes": {
+        "default": {
+            "double": { "opening": "„", "closing": "”" },
+            "single": { "opening": "«", "closing": "»" }
+        }
+    }
+}

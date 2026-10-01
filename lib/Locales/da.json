@@ -1,0 +1,14 @@
+{
+    "name": "Danish",
+    "code": "da",
+    "quotes": {
+        "default": {
+            "double": { "opening": "»", "closing": "«" },
+            "single": { "opening": "›", "closing": "‹" }
+        },
+        "alternatives": {
+            "double": { "opening": "”", "closing": "”" },
+            "single": { "opening": "’", "closing": "’" }
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Vietnamese",
+    "code": "vi",
+    "quotes": {
+        "default": {
+            "double": { "opening": "“", "closing": "”" }
+        },
+        "alternatives": {
+            "double": { "opening": "« ", "closing": " »" }
+        }
+    }
+}

@@ -1,62 +1,65 @@
 <?php
 
-namespace Hananils\Corrections;
+namespace Hananils\Typographer\Corrections;
 
-use Hananils\Correction;
-use DOMXPath;
+use Hananils\Typographer\Correction;
+use Hananils\Document\Node;
 
 class Widont extends Correction
 {
-    public $flow = 'block';
-
     public function apply()
     {
-        $text = $this->text('[contains(., " ")]');
-        $last = $text->item($text->length - 1);
+        $texts = $this->toFormattableTexts();
 
-        if ($last) {
-            $updated = $last->textContent;
+        foreach ($texts as $index => $text) {
+            if (
+                $text->isBlockEnd() ||
+                ($text->parent() === null && $text->isSiblingEnd())
+            ) {
+                // Remove whitespace at block end
+                $text->trimEnd();
 
-            // Trailing whitespace
-            if (substr($updated, -1) === ' ') {
-                $updated = $updated . Correction::NO_BREAK_SPACE;
-            } else {
-                $updated = $this->widont($updated);
+                // Inspect current block end to start
+                $current = $index;
+                $inspected = $text;
+                while ($inspected === $text || !$inspected->isBlockStart()) {
+                    if ($current < 0) {
+                        break;
+                    }
+                    $inspected = $texts->nth($current + 1);
+
+                    // Collapse whitespace
+                    $inspected->collapse();
+
+                    // If node contains space, set non-breaking space
+                    if ($inspected->contains(' ')) {
+                        $this->widont($inspected);
+                        break;
+                    }
+
+                    // Move to previous text node
+                    $current--;
+                }
             }
-
-            // Make sure slashes break correctly
-            $updated = str_replace(
-                ' /' . Correction::NO_BREAK_SPACE,
-                Correction::NO_BREAK_SPACE . '/ ',
-                $updated
-            );
-            $updated = str_replace(
-                '/' . Correction::NO_BREAK_SPACE,
-                '/ ',
-                $updated
-            );
-
-            $last->textContent = html_entity_decode($updated);
         }
     }
 
-    private function widont($string = null)
+    private function widont(Node $node)
     {
-        // Make sure $string is string
-        $string ??= '';
+        $text = $node->getText();
 
         // Replace space between last word and punctuation
-        $string = preg_replace_callback(
-            '|(\S)\s(\S?)$|u',
+        $text = preg_replace_callback(
+            '/(\S)\s(\S?)$/u',
             function ($matches) {
                 return $matches[1] . Correction::NO_BREAK_SPACE . $matches[2];
             },
-            $string
+            $text
         );
 
         // Replace space between last two words
-        return preg_replace_callback(
-            '|(\s)(?=\S*$)(\S+)|u',
+        $text = preg_replace_callback(
+            '/(\s)(?=\S*$)(\S+)/u',
             function ($matches) {
                 if (stripos($matches[2], '-')) {
                     $matches[2] = str_replace(
@@ -67,7 +70,17 @@ class Widont extends Correction
                 }
                 return Correction::NO_BREAK_SPACE . $matches[2];
             },
-            $string
+            (string) $text
         );
+
+        // Fix non-breaking space positioning around slashes
+        $text = str_replace(
+            ' /' . Correction::NO_BREAK_SPACE,
+            Correction::NO_BREAK_SPACE . '/ ',
+            $text
+        );
+        $text = str_replace('/' . Correction::NO_BREAK_SPACE, '/ ', $text);
+
+        $node->setText($text);
     }
 }

@@ -1,0 +1,9 @@
+{
+    "name": "Latvian",
+    "code": "lv",
+    "quotes": {
+        "default": {
+            "double": { "opening": "“", "closing": "”" }
+        }
+    }
+}

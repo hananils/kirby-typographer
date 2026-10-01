@@ -1,23 +1,48 @@
 {
     "name": "hananils/kirby-typographer",
-    "description": "Kirby plugin to apply micro typography",
+    "description": "Typographer is a plugin that offers methods to apply advanced typographic rules to your content. Besides handling common cases like quotes, apostrophes or dashes out of the box, it allows for the creation of custom corrections and helps to typeset your content inside your templates and snippets smoothly.",
     "license": "MIT",
-    "version": "0.2.0",
+    "type": "kirby-plugin",
+    "version": "4.0.0",
     "authors": [
         {
             "name": "hana+nils · Büro für Gestaltung",
             "email": "buero@hananils.de"
         }
     ],
+    "homepage": "https://kirby.hananils.de/plugins/typographer",
+    "require": {
+        "php": "^8.5",
+        "hananils/document": "dev-main",
+        "hananils/kirby-plugins": "dev-main",
+        "hananils/kirby-fields": "dev-main"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.8"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/hananils/document.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/hananils/kirby-plugins.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/hananils/kirby-fields.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
-            "Hananils\\": "lib"
+            "Hananils\\Typographer\\": "lib"
         }
     },
     "config": {
-        "optimize-autoloader": true
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9"
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
     }
 }

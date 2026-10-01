@@ -1,0 +1,9 @@
+{
+    "name": "Lao",
+    "code": "lo",
+    "quotes": {
+        "default": {
+            "double": { "opening": "“", "closing": "”" }
+        }
+    }
+}

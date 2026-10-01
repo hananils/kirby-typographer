@@ -1,0 +1,14 @@
+{
+    "name": "Galician",
+    "code": "gl",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "“", "closing": "”" }
+        },
+        "alternatives": {
+            "double": { "opening": "“", "closing": "”" },
+            "single": { "opening": "‘", "closing": "’" }
+        }
+    }
+}

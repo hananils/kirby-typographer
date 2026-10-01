@@ -4,48 +4,47 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit9e564d1b96cf01cc5fb1feae1cd06e7b
+class ComposerStaticInitf6f63938a8f8db29a4f289a13fff2a97
 {
     public static $prefixLengthsPsr4 = array (
-        'H' => 
+        'H' =>
         array (
+            'Hananils\\Typographer\\' => 21,
+            'Hananils\\Plugins\\' => 17,
+            'Hananils\\Fields\\' => 16,
             'Hananils\\' => 9,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Hananils\\' => 
+        'Hananils\\Typographer\\' =>
         array (
             0 => __DIR__ . '/../..' . '/lib',
+        ),
+        'Hananils\\Plugins\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/hananils/kirby-plugins/src',
+        ),
+        'Hananils\\Fields\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/hananils/kirby-fields/src',
+        ),
+        'Hananils\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/hananils/document/src',
         ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Hananils\\Correction' => __DIR__ . '/../..' . '/lib/Correction.php',
-        'Hananils\\Corrections\\Abbreviations' => __DIR__ . '/../..' . '/lib/Corrections/Abbreviations.php',
-        'Hananils\\Corrections\\Apostrophes' => __DIR__ . '/../..' . '/lib/Corrections/Apostrophes.php',
-        'Hananils\\Corrections\\Caps' => __DIR__ . '/../..' . '/lib/Corrections/Caps.php',
-        'Hananils\\Corrections\\Dashes' => __DIR__ . '/../..' . '/lib/Corrections/Dashes.php',
-        'Hananils\\Corrections\\Ellipsis' => __DIR__ . '/../..' . '/lib/Corrections/Ellipsis.php',
-        'Hananils\\Corrections\\LongWords' => __DIR__ . '/../..' . '/lib/Corrections/LongWords.php',
-        'Hananils\\Corrections\\Math' => __DIR__ . '/../..' . '/lib/Corrections/Math.php',
-        'Hananils\\Corrections\\Primes' => __DIR__ . '/../..' . '/lib/Corrections/Primes.php',
-        'Hananils\\Corrections\\Punctation' => __DIR__ . '/../..' . '/lib/Corrections/Punctation.php',
-        'Hananils\\Corrections\\Quotes' => __DIR__ . '/../..' . '/lib/Corrections/Quotes.php',
-        'Hananils\\Corrections\\Trademarks' => __DIR__ . '/../..' . '/lib/Corrections/Trademarks.php',
-        'Hananils\\Corrections\\Widont' => __DIR__ . '/../..' . '/lib/Corrections/Widont.php',
-        'Hananils\\Document' => __DIR__ . '/../..' . '/lib/Document.php',
-        'Hananils\\Locale' => __DIR__ . '/../..' . '/lib/Locale.php',
-        'Hananils\\Typographer' => __DIR__ . '/../..' . '/lib/Typographer.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit9e564d1b96cf01cc5fb1feae1cd06e7b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit9e564d1b96cf01cc5fb1feae1cd06e7b::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit9e564d1b96cf01cc5fb1feae1cd06e7b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitf6f63938a8f8db29a4f289a13fff2a97::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitf6f63938a8f8db29a4f289a13fff2a97::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitf6f63938a8f8db29a4f289a13fff2a97::$classMap;
 
         }, null, ClassLoader::class);
     }

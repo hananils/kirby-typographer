@@ -1,0 +1,14 @@
+{
+    "name": "German, Switzerland",
+    "code": "de_CH",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "‹", "closing": "›" }
+        },
+        "alternatives": {
+            "double": { "opening": "„", "closing": "“" },
+            "single": { "opening": "‚", "closing": "‘" }
+        }
+    }
+}

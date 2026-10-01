@@ -1,0 +1,10 @@
+{
+    "name": "New Tai Lue",
+    "code": "khb",
+    "quotes": {
+        "default": {
+            "double": { "opening": "《", "closing": "》" },
+            "single": { "opening": "〈", "closing": "〉" }
+        }
+    }
+}

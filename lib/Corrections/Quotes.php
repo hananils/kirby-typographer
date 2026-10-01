@@ -1,271 +1,210 @@
 <?php
 
-namespace Hananils\Corrections;
+namespace Hananils\Typographer\Corrections;
 
-use Hananils\Correction;
-use Hananils\Locale;
+use Hananils\Document\Nodes;
+use Hananils\Typographer\Correction;
+use Hananils\Typographer\Enums\QuoteStyle;
+use Hananils\Typographer\Enums\Wildcards;
+use Hananils\Typographer\Locale;
 
+/**
+ * Quotes finds straight double and single quotation marks and replaces them with
+ * their typographic counterparts. Typographic quotation marks are adapted based
+ * on the current locale of the content. It's possible to switch to alternative
+ * sets if this is supported by the current language.
+ */
 class Quotes extends Correction
 {
-    private $wildcard;
-    private $openingQuote;
-    private $closingQuote;
-    private $lastClosing;
+    private Nodes $texts;
 
-    private $opening = 0;
-    private $closing = 0;
-    private $occurences = [];
-    private $prohibitions = [
-        'prefix' => null,
-        'suffix' => null
-    ];
+    private Wildcards $wildcard;
+    private string $openingQuote;
+    private string $closingQuote;
+    private array $omissions = [];
 
-    private $blocks = [
-        'address',
-        'article',
-        'aside',
-        'blockquote',
-        'dd',
-        'details',
-        'dialog',
-        'div',
-        'dl',
-        'dt',
-        'fieldset',
-        'figcaption',
-        'figure',
-        'footer',
-        'form',
-        'h1',
-        'h2',
-        'h3',
-        'h4',
-        'h5',
-        'h6',
-        'header',
-        'hgroup',
-        'hr',
-        'li',
-        'main',
-        'nav',
-        'ol',
-        'p',
-        'section',
-        'table',
-        'ul'
-    ];
+    private int $opening = 0;
+    private int $closing = 0;
+    private array $occurences = [];
+
+    /** @var $style The quote style applied to the text, either `default` or `alternatives`. */
+    public string $style = 'default';
 
     public function apply()
     {
-        if ($alternatives = $this->option('alternatives')) {
-            $this->locale->setAlternatives($alternatives);
-        }
+        $this->texts = $this->toFormattableTexts();
 
-        $content = $this->document->documentElement->textContent;
+        foreach (Wildcards::cases() as $wildcard) {
+            if ($this->texts->contains($wildcard->value)) {
+                $this->wildcard = $wildcard;
 
-        foreach (["'", '"'] as $quote) {
-            if (strpos($content, $quote) !== false) {
-                $this->wildcard = $quote;
+                $this->applyLocale();
                 $this->findQuotes();
-                $this->setQuotes();
+                $this->replaceQuotes();
             }
         }
     }
 
-    /**
-     * Read content character by character, identifying quote pairs.
-     */
-    private function findQuotes()
+    private function applyLocale(?Locale $locale = null): void
     {
+        if ($locale === null) {
+            $locale = $this->locale;
+        }
+
+        $style = QuoteStyle::tryFrom($this->options->get(
+            'style',
+            $this->style
+        ));
+        $quotes = $locale->quotes($style);
+        $key = $this->wildcard->key();
+
+        $this->openingQuote = $quotes[$key]['opening'];
+        $this->closingQuote = $quotes[$key]['closing'];
+        $this->omissions = $quotes['omissions'] ?? [];
+    }
+
+    private function findQuotes(): void
+    {
+        // Maximum occurences
+        $count = substr_count($this->texts->getText(), $this->wildcard->value);
+
         $this->opening = 0;
         $this->closing = 0;
         $this->occurences = [];
 
         // Store quote replacement characters
-        foreach ($this->text() as $text) {
-            $content = $text->textContent;
+        foreach ($this->texts as $text) {
+            if (count($this->occurences) === $count) {
+                // Stop searching if all occurences have been found
+                break;
+            }
 
             // Reset quotes state with each block start
-            if ($this->isBlockStart($text) === true) {
+            if ($text->isBlockStart()) {
                 // Last block has an opening quote that has not been closed
                 if ($this->opening > $this->closing) {
                     // Reset last opening quote because there is no closing partner
                     $previous = $this->findPreviousOpening();
-                    $this->occurences[$previous] = $this->wildcard;
+                    $this->occurences[$previous] = $this->wildcard->value;
                 }
 
                 $this->opening = 0;
                 $this->closing = 0;
             }
 
-            $this->findLocale($text);
-            $this->getLocaleQuotes();
+            if (!$text->contains($this->wildcard->value)) {
+                continue;
+            }
 
-            foreach (mb_str_split($content) as $index => $character) {
-                // Character is not a quote
+            // Set locale quotes
+            $locale = Locale::from($text, $this->locale->get());
+            $this->applyLocale($locale);
+
+            foreach ($text->toCharacters() as $character) {
+                /**
+                 * Handle non-quoting characters
+                 */
                 if (
-                    $character !== $this->wildcard ||
-                    $this->isInline($content, $index)
+                    !$character->is($this->wildcard->value)
+                    || $character->inWord()
                 ) {
                     // Register existing typographic quotes
-                    if ($character === $this->openingQuote) {
+                    if ($character->is($this->openingQuote)) {
                         $this->opening++;
-                    } elseif ($character === $this->closingQuote) {
+                    } elseif ($character->is($this->closingQuote)) {
                         $this->closing++;
-                        $this->lastClosing = $index;
                     }
 
                     continue;
                 }
 
-                // Set quotes
-                if ($this->isOpeningQuote($text, $content, $index)) {
-                    // Character is an opening quote
-                    $this->occurences[] = $this->openingQuote;
-                    $this->opening++;
-                } elseif ($this->opening === 0) {
-                    // No preceding opening quote
-                    $this->occurences[] = $this->wildcard;
-                } elseif ($this->closing === $this->opening) {
-                    // Character is an orphaned closing quote without related opening quote
-                    $this->handleOrphans($content, $index, $character);
-                } else {
-                    // Character is a closing quote
-                    $this->occurences[] = $this->closingQuote;
-                    $this->closing++;
-                    $this->lastClosing = $index;
+                /**
+                 * Handle opening characters
+                 */
+                if ($character->hasPrevBoundary()) {
+                    if ($this->isStartOmission($character)) {
+                        // Character is an omitting apostrophe
+                        $this->storeNone();
+
+                        continue;
+                    } elseif ($this->opening === $this->closing) {
+                        // Character is opening quote
+                        $this->storeOpeningQuote();
+
+                        continue;
+                    }
                 }
+
+                /**
+                 * Handle closing characters
+                 */
+                if ($character->hasNextBoundary()) {
+                    if ($this->isEndOmission($character)) {
+                        // Character is an omitting apostrophe
+                        $this->storeNone();
+
+                        continue;
+                    } elseif ($this->opening > $this->closing) {
+                        // Character is closing quote
+                        $this->storeClosingQuote();
+
+                        continue;
+                    }
+                }
+
+                // Character is not a quote
+                $this->storeNone();
             }
         }
     }
 
-    /**
-     * Determines whether the current text node is opening a new block context.
-     */
-    private function isBlockStart($text)
+    public function isStartOmission($character)
     {
-        $parent = $text->parentNode;
-
-        if (
-            $text->previousSibling === null &&
-            in_array($parent->localName, $this->blocks)
-        ) {
-            return true;
+        if (!$this->omissions || $this->wildcard->value !== "'") {
+            // Neither does the current locale specify any omission nor
+            // does the wildcard represent a possible apostrophe.
+            return false;
         }
 
-        return false;
+        return (
+            preg_match(
+                $this->omissions['start'],
+                (string) $character->nextWord()
+            ) === 1
+        );
     }
 
-    private function handleOrphans($content, $index, $character)
+    public function isEndOmission($character)
     {
-        $currentIsQuote = false;
-        $prev = $this->getPrev($content, $index);
+        if (!$this->omissions || $this->wildcard->value !== "'") {
+            // Neither does the current locale specify any omission nor
+            // does the wildcard represent a possible apostrophe.
+            return false;
+        }
 
-        if ($prev === $this->wildcard) {
-            // There are two consecutive quotes
-            $currentIsQuote = true;
-        } else {
-            // Evaluate quote propabilities
-            $propability = $this->contextLocale->evaluateClosingQuotes(
-                [
-                    [
-                        'preceding' => $this->getPrecedingText(
-                            $content,
-                            $this->lastClosing
-                        ),
-                        'following' => $this->getFollowingText(
-                            $content,
-                            $this->lastClosing
-                        )
-                    ],
-                    [
-                        'preceding' => $this->getPrecedingText(
-                            $content,
-                            $index
-                        ),
-                        'following' => $this->getFollowingText($content, $index)
-                    ]
-                ],
-                $this->wildcard
-            );
+        return (
+            preg_match($this->omissions['end'], (string) $character->prevWord())
+            === 1
+        );
+    }
 
-            if ($propability[0] < $propability[1]) {
-                // The previous quote is considered not to be a quote
-                $currentIsQuote = true;
+    /**
+     * Replace quotes throughout the content.
+     */
+    public function replaceQuotes()
+    {
+        foreach ($this->texts as $text) {
+            if (empty($this->occurences)) {
+                // Stop parsing when all occurences have been replaced
+                break;
             }
-        }
 
-        if ($currentIsQuote === true) {
-            // The previous closing quote is not a quote
-            $this->occurences[$this->findPreviousClosing()] = $this->wildcard;
-
-            // The current wildcard is a closing quote
-            $this->occurences[] = $this->closingQuote;
-            $this->lastClosing = $index;
-        } else {
-            // The current wildcard is not a quote
-            $this->occurences[] = $this->wildcard;
-        }
-    }
-
-    /**
-     * Checks if the given character is within a word.
-     */
-    private function isInline($content, $index)
-    {
-        $prev = $this->getPrev($content, $index);
-        $next = $this->getNext($content, $index);
-
-        return preg_match('/\p{L}/u', $prev) && preg_match('/\p{L}/u', $next);
-    }
-
-    /**
-     * Checks if the given character is an opening quote.
-     */
-    private function isOpeningQuote($text, $content, $index)
-    {
-        // Is first character in block
-        if ($index === 0 && $text->previousSibling === null) {
-            return true;
-        }
-
-        // Is nested secondary opening quote
-        $prev = $this->getPrev($content, $index);
-        if ($this->wildcard === "'" && $prev === '"') {
-            return true;
-        }
-
-        // @todo: This might require a locale dependent check
-        // if ($this->open === true) {
-        //     // There is already an unclosed opening quote
-        //     return false;
-        // }
-
-        // Get text context
-        $preceding = $this->getPrecedingText($content, $index);
-        $following = $this->getFollowingText($content, $index);
-
-        return preg_match('/(\s|\(|-)/', $prev) &&
-            $this->contextLocale->assessOpeningQuote(
-                $preceding,
-                $following,
-                $this->wildcard
-            ) >= 0;
-    }
-
-    /**
-     * Replace quotes troughout the content.
-     */
-    public function setQuotes()
-    {
-        foreach ($this->text() as $text) {
-            $content = $text->textContent;
             $result = '';
 
-            foreach (mb_str_split($content) as $index => $character) {
+            foreach ($text->toCharacters() as $character) {
                 if (
-                    $character === $this->wildcard &&
-                    !$this->isInline($content, $index)
+                    $character->is($this->wildcard->value)
+                    && !$character->inWord()
                 ) {
                     $result .= array_shift($this->occurences);
                 } else {
@@ -273,59 +212,42 @@ class Quotes extends Correction
                 }
             }
 
-            $text->textContent = html_entity_decode($result);
+            // Set locale quotes
+            $locale = Locale::from($text, $this->locale->get());
+            $this->applyLocale($locale);
+
+            // Clean-up spaces
+            $result = preg_replace(
+                '/' . $this->openingQuote . '\p{Zs}/',
+                $this->openingQuote,
+                $result
+            );
+            $result = preg_replace(
+                '/\p{Zs}' . $this->closingQuote . '/',
+                $this->closingQuote,
+                (string) $result
+            );
+
+            // Set text
+            $text->setText($result);
         }
     }
 
-    /**
-     * Get the localized opening and closing quotes for the current context.
-     */
-    public function getLocaleQuotes()
+    private function storeOpeningQuote()
     {
-        if ($this->wildcard === '"') {
-            $this->openingQuote = $this->contextLocale->getDoubleOpeningQuote();
-            $this->closingQuote = $this->contextLocale->getDoubleClosingQuote();
-        } else {
-            $this->openingQuote = $this->contextLocale->getSingleOpeningQuote();
-            $this->closingQuote = $this->contextLocale->getSingleClosingQuote();
-        }
+        $this->occurences[] = $this->openingQuote;
+        $this->opening++;
     }
 
-    public function getPrev($content, $index)
+    private function storeClosingQuote()
     {
-        if ($index > 0) {
-            return mb_substr($content, $index - 1, 1);
-        }
-
-        return '';
+        $this->occurences[] = $this->closingQuote;
+        $this->closing++;
     }
 
-    public function getNext($content, $index)
+    public function storeNone()
     {
-        if ($index < mb_strlen($content) - 1) {
-            return mb_substr($content, $index + 1, 1);
-        }
-
-        return '';
-    }
-
-    public function getPrecedingText($content, $index)
-    {
-        $preceding = mb_substr($content, 0, $index);
-
-        return mb_substr($preceding, -10);
-    }
-
-    public function getFollowingText($content, $index)
-    {
-        $following = mb_substr($content, $index);
-
-        return mb_substr($following, 1, 10);
-    }
-
-    private function findLast()
-    {
-        return array_key_last($this->occurences);
+        $this->occurences[] = $this->wildcard->value;
     }
 
     private function findPreviousOpening()

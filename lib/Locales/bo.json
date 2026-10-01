@@ -1,0 +1,10 @@
+{
+    "name": "Tibetan",
+    "code": "bo",
+    "quotes": {
+        "default": {
+            "double": { "opening": "《", "closing": "》" },
+            "single": { "opening": "〈", "closing": "〉" }
+        }
+    }
+}

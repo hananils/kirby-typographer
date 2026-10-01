@@ -1,19 +1,38 @@
 <?php
 
-namespace Hananils\Corrections;
+namespace Hananils\Typographer\Corrections;
 
-use Hananils\Correction;
+use Hananils\Typographer\Correction;
 
+/**
+ * Dashes replaces `--` with n-dashes and `---` with m-dashes, adding non
+ * breaking spaces before the dashes. It also replaces single dashes used to
+ * mark ranges with their typographic counterpart.
+ *
+ * > This does not look right <mark>--</mark> doesn't it?
+ *
+ * > This looks much better <mark>–</mark> don't you think!
+ */
 class Dashes extends Correction
 {
-    public $replacements = [
+    private $replacements = [
         // n-dashes: single hyphen, double hyphen, n-dash
-        '/ (-|--|–) /uim' => Correction::NO_BREAK_SPACE . '– ',
+        '/ (-|--|–) /im' => Correction::NO_BREAK_SPACE . '– ',
 
         // m-dashes: tripple hyphen, m-dash
-        '/ (---|—) /uim' => Correction::NO_BREAK_SPACE . '— ',
-
-        // ranges
-        '/(\d)-(\d)/uim' => '$1–$2'
+        '/ (---|—) /im' => Correction::NO_BREAK_SPACE . '– '
     ];
+
+    /**
+     * Formats dashes, excluding preformatted text.
+     *
+     * This method is called when applying `$typographer->dashes()`.
+     */
+    public function apply()
+    {
+        $this->toFormattableTexts()->replaceTextAll(
+            $this->replacements,
+            isRegEx: true
+        );
+    }
 }

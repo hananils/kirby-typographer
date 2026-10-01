@@ -1,0 +1,12 @@
+{
+    "name": "Lojban",
+    "code": "jbo",
+    "quotes": {
+        "default": {
+            "double": { "opening": "lu ", "closing": " li’u" }
+        },
+        "alternatives": {
+            "double": { "opening": "lu “", "closing": "” li’u" }
+        }
+    }
+}

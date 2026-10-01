@@ -1,26 +1,33 @@
 <?php
 
-namespace Hananils\Corrections;
+namespace Hananils\Typographer\Corrections;
 
-use Hananils\Correction;
+use Hananils\Typographer\Correction;
 
+/**
+ * Long words wraps words longer than the specified limit. This can be used to
+ * apply hyphenation only to those longer word, making hyphenated text in older
+ * browsers more readable.
+ *
+ * @extends Correction
+ */
 class LongWords extends Correction
 {
-    public $wrapper = 'span';
-    public $attributes = [
-        'class' => 'long-word'
-    ];
-
     public function apply()
     {
-        /**
-         * Words may contain unicode letters (\p{L}) and soft hyphens (\x{00AD}).
-         */
-        $this->search =
-            '/([\p{L}|\x{00AD}|\p{P}]{' .
-            $this->option('word-length', 15) .
-            ',})/uim';
+        $length = $this->options->get('length', 15);
+        $force = $this->options->get('force', false);
+        $wrapper = $this->options->get('wrapper', 'span');
+        $classname = $this->options->get('classname', 'long-word');
 
-        $this->wrap();
+        $pattern = '/([\p{L}|\x{00AD}|\p{P}]{' . $length . ',})/uim';
+        $method = $force === true ? 'wrapText' : 'wrapTextIfNotWrapped';
+
+        $this->toFormattableTexts()->{$method}(
+            $pattern,
+            $wrapper,
+            ['class' => $classname],
+            isRegEx: true
+        );
     }
 }

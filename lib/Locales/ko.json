@@ -1,0 +1,10 @@
+{
+    "name": "Korean, North Korea",
+    "code": "ko",
+    "quotes": {
+        "default": {
+            "double": { "opening": "《", "closing": "》" },
+            "single": { "opening": "〈", "closing": "〉" }
+        }
+    }
+}

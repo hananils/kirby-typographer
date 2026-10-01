@@ -1,13 +1,21 @@
 <?php
 
-namespace Hananils\Corrections;
+namespace Hananils\Typographer\Corrections;
 
-use Hananils\Correction;
+use Hananils\Typographer\Correction;
 
 class Math extends Correction
 {
-    public $replacements = [
+    private $replacements = [
         // times sign
-        '/ x /' => Correction::NO_BREAK_SPACE . '× '
+        '/(\d) x (\d)/' => '$1' . Correction::NO_BREAK_SPACE . '× $2'
     ];
+
+    public function apply()
+    {
+        $this->toFormattableTexts()->replaceTextAll(
+            $this->replacements,
+            isRegEx: true
+        );
+    }
 }

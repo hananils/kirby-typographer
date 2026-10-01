@@ -1,313 +1,372 @@
 <?php
 
-namespace Hananils;
+namespace Hananils\Typographer;
 
-use DomDocument;
-use DOMXPath;
-use Kirby\Toolkit\Str;
-use Hananils\Locale;
+use BadMethodCallException;
+use Closure;
+use Dom\HTMLDocument;
+use Hananils\Document\Inspector;
+use Kirby\Content\Field;
 
-use Hananils\Corrections\Abbreviations;
-use Hananils\Corrections\Apostrophes;
-use Hananils\Corrections\Caps;
-use Hananils\Corrections\Dashes;
-use Hananils\Corrections\Ellipsis;
-use Hananils\Corrections\LongWords;
-use Hananils\Corrections\Math;
-use Hananils\Corrections\Primes;
-use Hananils\Corrections\Punctation;
-use Hananils\Corrections\Quotes;
-use Hananils\Corrections\Trademarks;
-use Hananils\Corrections\Widont;
-
-class Typographer extends Document
+/**
+ * Main Typographer class handling corrections and instructions.
+ *
+ * @copyright hana+nils · Büro für Gestaltung
+ * @author Nils Hörrmann <nils.hoerrmann@hananils.de>
+ * @link https://hananils.de
+ * @license https://kirby.hananils.de/licenses/plus
+ */
+class Typographer implements \Stringable
 {
-    protected $locale;
-    protected $ignore = ['pre', 'code', 'script', 'style'];
-    protected $options = [];
-    protected $flow = 'block';
+    public Inspector $inspector;
+    public Locale $locale;
+    public Options $options;
 
-    private $isCorrected = false;
-    private $corrections = [
-        'dashes' => '\Hananils\Corrections\Dashes',
-        'math' => '\Hananils\Corrections\Math',
-        'quotes' => '\Hananils\Corrections\Quotes',
-        'apostrophes' => '\Hananils\Corrections\Apostrophes',
-        'primes' => '\Hananils\Corrections\Primes',
-        'punctation' => '\Hananils\Corrections\Punctation',
-        'ellipsis' => '\Hananils\Corrections\Ellipsis',
-        'trademarks' => '\Hananils\Corrections\Trademarks',
-        'widont' => '\Hananils\Corrections\Widont',
-        'abbreviations' => '\Hananils\Corrections\Abbreviations',
-        'longWords' => '\Hananils\Corrections\LongWords',
-        'caps' => '\Hananils\Corrections\Caps',
-        'lists' => '\Hananils\Corrections\Lists'
-    ];
+    private array $instructions = [];
+    public bool $processed = false;
+    public ?Field $field = null;
 
-    public function __construct($locale = 'en', $flow = 'block')
-    {
-        parent::__construct();
+    /**
+     * @param $inspector The document inspector.
+     * @param $locale The locale.
+     * @param $options The default options.
+     */
+    public function __construct(
+        Inspector $inspector,
+        string $locale = 'en',
+        array $options = []
+    ) {
+        Corrections::addDirectory(__DIR__ . '/Corrections');
 
+        $this->inspector = $inspector;
         $this->locale = new Locale($locale);
+        $this->options = new Options($options);
+    }
 
-        if ($flow === 'inline') {
-            $this->flow = 'inline';
+    /**
+     * Creates a new Typographer instance from an HTML string.
+     *
+     * @param $html The HTML string.
+     * @param $locale The locale.
+     * @param $options The global options.
+     */
+    public static function fromString(
+        string $html,
+        string $locale = 'en',
+        array $options = []
+    ): self {
+        $inspector = Inspector::fromString($html);
+
+        return new Typographer($inspector, $locale, $options);
+    }
+
+    /**
+     * Creates a new Typographer instance from an existing HTMLDocument.
+     *
+     * @param $document The HTMLDocument object.
+     * @param $fragment Flag whether the content should be treated as fragement, defaults to true.
+     * @param $locale The locale.
+     * @param $options The global options.
+     */
+    public static function fromDocument(
+        HTMLDocument $document,
+        bool $fragment = true,
+        string $locale = 'en',
+        array $options = []
+    ): self {
+        $inspector = Inspector::fromDocument($document, $fragment);
+
+        return new Typographer($inspector, $locale, $options);
+    }
+
+    /**
+     * Provides shortcuts to setter getter methods, typographic instructions or
+     * field methods (in case a field is set of the class).
+     */
+    public function __call(string $id, array $arguments = [])
+    {
+        // Check if this can be mapped to a getter or setter method
+        $prefix = $arguments === [] ? 'get' : 'set';
+        $name = $prefix . ucfirst($id);
+        if (method_exists($this, $name)) {
+            return $this->{$name}(...$arguments);
         }
-    }
 
-    public function __call($name, $arguments)
-    {
-        // Correction
-        if (array_key_exists($name, $this->corrections)) {
-            $this->apply($this->corrections[$name]);
-            $this->isCorrected = true;
-        }
+        // Check if this is an instruction for a correction
+        if (Corrections::has($id)) {
+            $options = $arguments[0] ?? [];
 
-        return $this;
-    }
-
-    public function __debugInfo()
-    {
-        return $this->toArray();
-    }
-
-    public function parse($input)
-    {
-        $this->load($input);
-        $this->isCorrected = false;
-
-        return $this;
-    }
-
-    public function ignore(array $ignore = [])
-    {
-        $this->ignore = $ignore;
-
-        return $this;
-    }
-
-    public function corrections(array $corrections = [])
-    {
-        foreach ($corrections as $id => $correction) {
-            // Convert numeric ids to string so that correction can be
-            // called directly via magic method.
-            if (is_numeric($id)) {
-                $id = lcfirst(array_pop(explode('/', $string)));
-            }
-
-            $this->corrections[$id] = $correction;
-        }
-
-        return $this;
-    }
-
-    public function options(array $options = [])
-    {
-        $this->options = array_merge($this->options, $options);
-
-        return $this;
-    }
-
-    public function alternatives($alternatives = true)
-    {
-        $this->options = ['alternatives' => $alternatives];
-
-        return $this;
-    }
-
-    private function process()
-    {
-        if ($this->isCorrected === false) {
-            if ($this->document->childNodes->length > 0) {
-                foreach ($this->corrections as $correction) {
-                    $this->apply($correction);
+            // Remove instruction
+            if ($options === false) {
+                // We can only remove instructions if any were set at all.
+                // Otherwise the removed instruction will be added back again
+                // later on when typography is applied.
+                if ($this->instructions === []) {
+                    $this->setDefaults();
                 }
-            }
-        }
-    }
 
-    private function apply($correction)
-    {
-        $method = new $correction(
-            $this->document,
-            $this->locale,
-            $this->ignore,
-            $this->options
+                return $this->unset($id);
+            }
+
+            // Set instruction
+            return $this->set($id, $options);
+        }
+
+        // If a Kirby field has been registered, forward call to field and
+        // return the result
+        if ($this->field !== null) {
+            return $this->toField()->{$id}();
+        }
+
+        // Nothing found
+        throw new BadMethodCallException(
+            "Call to unknown method $id on Typographer."
         );
-
-        if ($method->hasFlow($this->flow)) {
-            $method->apply();
-
-            $this->document = $method->document();
-        }
-
-        $this->isCorrected = true;
-    }
-
-    private function getNodes()
-    {
-        $nodes = null;
-
-        if ($this->query) {
-            // Filter content
-            $xpath = new DOMXPath($this->document);
-            if (strpos($this->query, '/') === 0) {
-                $nodes = $xpath->query($this->query);
-            } else {
-                $nodes = $xpath->query('//' . $this->query);
-            }
-        } else {
-            // Inline text is wrapped in a paragraph automatically on load.
-            // There can only ever be one paragraph in the document in these
-            // cases, thus taking it as the parent will return the inline content
-            // needed for output.
-            if ($this->flow === 'inline') {
-                $parent = $this->document->getElementsByTagName('p');
-            } else {
-                $parent = $this->document->getElementsByTagName('body');
-            }
-
-            if ($parent && $parent->count()) {
-                $nodes = $parent->item(0)->childNodes;
-            }
-        }
-
-        return $nodes;
     }
 
     /**
-     * Status checks
+     * Stores processing instructions for a correction. By default, if an
+     * instruction for the given id already exists, it is replaced by the new
+     * one, moving its id to the end of the list of instructions and thus
+     * changing the execution order. This can be circumvented by setting the
+     * unique flag to `false`
+     *
+     * @param $id The instruction id.
+     * @param $options The instruction options.
+     * @param $unique Flag for unique instruction handling.
      */
-
-    public function isCorrected()
+    public function set(string $id, array $options = [], $unique = true): self
     {
-        return $this->isCorrected === true;
-    }
+        if (Corrections::has($id)) {
+            $this->processed = false;
 
-    public function isFiltered()
-    {
-        return isset($this->query);
-    }
+            // Merge with existing instructions
+            if ($unique === true && $this->has($id) !== false) {
+                $options = $this->get($id)->setAll($options);
 
-    public function isInline()
-    {
-        return $this->flow === 'inline';
-    }
+                $this->unset($id);
+            } else {
+                $options = new Options($options);
+            }
 
-    public function isBlock()
-    {
-        return $this->flow === 'block';
+            $this->instructions[] = [$id, $options];
+        }
+
+        return $this;
     }
 
     /**
-     * Converters
+     * Returns the instructions for a given correction.
+     *
+     * @param $id The correction id.
      */
-
-    public function toHtml()
+    public function get(string $id): Options|false
     {
-        // Apply typography
-        $this->process();
-
-        // Get nodes
-        $nodes = $this->getNodes();
-
-        // Get typographically corrected content
-        $content = '';
-        if ($nodes) {
-            foreach ($nodes as $node) {
-                $content .= $this->document->saveHTML($node);
-            }
+        if ($index = $this->for($id)) {
+            return $this->instructions[$index][1];
         }
 
-        return $content;
+        return false;
     }
 
-    public function toText($boundary = null, $ellipsis = '&nbsp;…')
+    /**
+     * Removes a correction from the processing instructions.
+     *
+     * @param $id The instruction id.
+     */
+    public function unset(string $id): self
     {
-        // Handle empty documents
-        if (!trim($this->document->textContent)) {
-            return '';
+        if ($index = $this->for($id)) {
+            unset($this->instructions[$index]);
         }
 
-        // Get nodes
-        $nodes = $this->getNodes();
+        return $this;
+    }
 
-        // Get typographically corrected content
-        $text = '';
-        foreach ($nodes as $node) {
-            // Collapse whitespace
-            $content = trim(
-                preg_replace('/(\r|\n|\t|\p{Zs})+/', ' ', $node->textContent)
+    /**
+     * Resets the list of instructions.
+     */
+    public function reset(): self
+    {
+        $this->processed = false;
+        $this->instructions = [];
+
+        return $this;
+    }
+
+    /**
+     * Finds and returns the index of instructions for a correction.
+     *
+     * @param $id The correction id.
+     */
+    private function for(string $id): int|false
+    {
+        if ($this->instructions === []) {
+            return false;
+        }
+
+        return array_search($id, array_column($this->instructions, 0));
+    }
+
+    public function has(string $id): bool
+    {
+        return $this->for($id) !== false;
+    }
+
+    /**
+     * Sets the default instructions.
+     *
+     * @param $options Associative array of options with the correction id as key.
+     */
+    public function setDefaults(array $options = []): self
+    {
+        $options = array_merge($this->options->getAll(), $options);
+
+        foreach (Corrections::$processingOrder as $instruction) {
+            $this->set(
+                $instruction,
+                $options[$instruction] ?? [],
+                unique: false
             );
-
-            if (!$content) {
-                continue;
-            }
-
-            $text .= ' ' . $content;
         }
 
-        // Shorten text if required
-        if ($boundary > 0) {
-            $words = explode(' ', $text);
-            $text = '';
-            $length = -1;
+        return $this;
+    }
 
-            foreach ($words as $word) {
-                $length = $length + mb_strlen($word) + 1;
+    /**
+     * Reads instructions and applies typographic corrections in defined order.
+     */
+    public function apply(): self
+    {
+        if ($this->processed === true || $this->inspector->isEmpty()) {
+            return $this;
+        }
 
-                if ($length > $boundary) {
-                    break;
+        if ($this->instructions === []) {
+            $this->setDefaults();
+        }
+
+        foreach ($this->instructions as $instruction) {
+            [$id, $options] = $instruction;
+
+            if ($correction = Corrections::get($id)) {
+                if (is_string($correction)) {
+                    $this->applyByClass($correction, $options);
+                } else {
+                    $this->applyByClosure($correction, $options);
                 }
-
-                $text .= ' ' . $word;
             }
         }
 
-        // Apply typography
-        $this->parse($text);
-        $this->process();
+        $this->processed = true;
 
-        // Trim text
-        $text = trim($this->document->textContent);
+        return $this;
+    }
 
-        // Shorten text if required
-        if ($boundary > 0) {
-            // Remove orphaned punctation
-            $text = trim($text, '-–,;:');
-            $text .= $ellipsis;
+    /**
+     * Applies correction by class name.
+     *
+     * @param $correction The class name.
+     * @param $options The correction options.
+     */
+    private function applyByClass(string $correction, Options $options): void
+    {
+        $method = new $correction($this->inspector, $this->locale, $options);
+        $method->apply();
 
-            // Remove orphaned words after shortening,
-            // e. g. removes "It …" from "The summary. It …"
-            $text = preg_replace(
-                '/([.?!])\p{Zs}\p{L}+' . $ellipsis . '$/uim',
-                '$1',
-                $text
+        $this->inspector = $method->inspector->clearSelection();
+    }
+
+    /**
+     * Applies correction by closure.
+     *
+     * @param $correction The closure.
+     * @param $options The correction options.
+     */
+    private function applyByClosure(Closure $correction, Options $options): void
+    {
+        $inspector = $correction($this->inspector, $this->locale, $options);
+
+        if ($inspector instanceof Inspector) {
+            $this->inspector = $inspector->clearSelection();
+        }
+    }
+
+    /**
+     * If Designer is installed, returns a Designer instance with the current
+     * document for further DOM manipulation.
+     *
+     * If Designer is not installed, returns the current Typographer instance
+     * without any changes.
+     */
+    public function designer()
+    {
+        if (class_exists('\Hananils\Designer')) {
+            $this->apply();
+
+            $inspector = $this->inspector;
+            if ($inspector->isFiltered()) {
+                $document = $inspector->reduce()->document;
+            } else {
+                $document = $inspector->clearSelection()->document;
+            }
+
+            $designer = \Hananils\Designer::fromDocument(
+                $document,
+                $inspector->fragment
             );
+            $designer->field = $this->field;
+
+            return $designer;
         }
 
-        return $text;
+        return $this;
     }
 
-    public function toArray()
+    /**
+     * Returns the source field – if Typographer has a field reference –
+     * applying all typographic changes first.
+     *
+     * Field and block methods will set the source field, the `typographer()`
+     * helper will have no reference by default.
+     */
+    public function toField(): ?Field
     {
-        return [
-            'locale' => $this->locale->toString(),
-            'ignore' => $this->ignore,
-            'flow' => $this->flow,
-            'corrections' => array_keys($this->corrections),
-            'options' => $this->options,
-            'corrected' => $this->isCorrected(),
-            'filtered' => $this->isFiltered()
-        ];
+        if ($this->field !== null) {
+            $this->field->value = $this->toHtml();
+        }
+
+        return $this->field;
     }
 
-    public function toDocument()
+    /**
+     * Applies all corrections and returns the resulting HTML as string.
+     *
+     * @param $collapse Toggles whitespace collapsing.
+     * @param $trim Toggles content trimming.
+     */
+    public function toHtml(bool $collapse = false, bool $trim = false): string
     {
-        return $this->document;
+        $this->apply();
+
+        return $this->inspector->toHtml($collapse, $trim);
     }
 
-    public function __toString()
+    /**
+     * Applies all corrections and returns a text only respresentation with
+     * all tags removed.
+     */
+    public function toPlainText()
+    {
+        $this->apply();
+
+        return strip_tags((string) $this->inspector->toHtml(true, true));
+    }
+
+    /**
+     * Returns a string representation of the current document.
+     */
+    public function __toString(): string
     {
         return $this->toHtml();
     }

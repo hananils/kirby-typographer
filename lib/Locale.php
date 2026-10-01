@@ -1,186 +1,181 @@
 <?php
 
-namespace Hananils;
+namespace Hananils\Typographer;
 
-class Locale
+use DirectoryIterator;
+use Hananils\Document\Node;
+use Hananils\Typographer\Enums\QuoteStyle;
+use Stringable;
+
+/**
+ * Locale manager providing typographic settings for the different locales,
+ * e. g. single or double quotes, apostrophes or dashes.
+ */
+class Locale implements Stringable
 {
-    private $language = 'en';
-    private $region = 'US';
-    private $alternatives = false;
-    private $quotes = null;
+    private static array $locales = [];
+    private static array $data = [];
+    private static array $defaults = [
+        'quotes' => [
+            'default' => [
+                'double' => ['opening' => '“', 'closing' => '”'],
+                'single' => ['opening' => '‘', 'closing' => '’']
+            ]
+        ]
+    ];
 
-    public function __construct($locale = 'en', $alternatives = false)
+    private string $locale = 'en';
+
+    /**
+     * Locale constructor.
+     *
+     * @param $locale The locale.
+     */
+    public function __construct(string $locale = 'en')
     {
-        $this->language = \Locale::getPrimaryLanguage($locale) ?? '';
-        $this->region = \Locale::getRegion($locale) ?? '';
-        $this->alternatives = $alternatives;
+        $this->discover();
+        $this->set($locale);
     }
 
-    public function is($locale)
+    /**
+     * Creates a new Locale instance from a node, checking for the closest
+     * locale definition in the ancestors. Returns `null` if no locale is defined
+     * in the tree.
+     *
+     * @param Node $node The node.
+     */
+    public static function from(Node $node, $locale = 'en'): ?self
     {
-        $language = \Locale::getPrimaryLanguage($locale);
-        if ($language !== $this->language) {
-            return false;
+        $withLang = $node->parents()->filterBy('@lang', '!=', '');
+
+        if ($withLang->isNotEmpty()) {
+            $lang = $withLang->first()->getAttribute('lang');
+            $locale = str_replace('-', '_', $lang);
         }
 
-        $region = \Locale::getRegion($locale);
-        if (!empty($region) && $region !== $this->region) {
-            return false;
-        }
-
-        return true;
+        return new Locale($locale);
     }
 
-    public function in(array $locales = [])
+    /**
+     * Finds all locales provided inside the locales directory.
+     */
+    private function discover(): void
     {
-        $isIncluded = false;
-
-        foreach ($locales as $locale) {
-            if ($this->is($locale)) {
-                $isIncluded = true;
-            }
-        }
-
-        return $isIncluded;
-    }
-
-    public function setAlternatives($alternatives)
-    {
-        $this->alternatives = $alternatives;
-        $this->setQuotes(true);
-    }
-
-    public function setQuotes($force = false)
-    {
-        if ($force !== true && $this->quotes !== null) {
+        // Check if discovery already run
+        if (self::$locales !== []) {
             return;
         }
 
-        $this->quotes = [
-            'single' => [],
-            'double' => []
-        ];
+        $directory = new DirectoryIterator(__DIR__ . '/Locales');
 
-        switch ($this->language) {
-            case 'de':
-                if ($this->region === 'CH') {
-                    $this->quotes['single'] = ['‹', '›'];
-                    $this->quotes['double'] = ['«', '»'];
-                } elseif (
-                    $this->alternatives === true ||
-                    $this->alternatives === 'guillemets'
-                ) {
-                    $this->quotes['single'] = ['›', '‹'];
-                    $this->quotes['double'] = ['»', '«'];
-                } else {
-                    $this->quotes['single'] = ['‚', '‘'];
-                    $this->quotes['double'] = ['„', '“'];
-                }
-                break;
-            case 'fr':
-                $this->quotes['single'] = ['‹&#x202F;', '&#x202F;›'];
-                $this->quotes['double'] = ['«&#x202F;', '&#x202F;»'];
-                break;
-            case 'en':
-            default:
-                $this->quotes['single'] = ['‘', '’'];
-                $this->quotes['double'] = ['“', '”'];
+        foreach ($directory as $file) {
+            if ($file->getExtension() !== 'json') {
+                continue;
+            }
+
+            // Get locale name
+            $locale = $file->getBasename('.json');
+
+            // Store path for locale
+            self::$locales[$locale] = $file->getPathname();
         }
     }
 
-    public function getDoubleOpeningQuote()
+    /**
+     * Sets the locale by looking up the best match for the given identifier.
+     *
+     * @param $locale The locale string.
+     */
+    public function set(string $locale = 'en'): void
     {
-        $this->setQuotes();
-
-        return $this->quotes['double'][0];
+        // Setting the third parameter to `false` makes sure the returned locale
+        // follows the notation in the directory, keeping case and subtag separator.
+        // This is important because PHP uses underscores as separators, while
+        // HTML requires dashes.
+        $this->locale = locale_lookup(
+            array_keys(self::$locales),
+            $locale,
+            false,
+            'en'
+        );
+        $this->load($this->locale);
     }
 
-    public function getDoubleClosingQuote()
+    /**
+     * Loads the data associated with the current locale.
+     *
+     * @param $locale The locale string.
+     */
+    private function load(string $locale = 'en'): void
     {
-        $this->setQuotes();
-
-        return $this->quotes['double'][1];
-    }
-
-    public function getSingleOpeningQuote()
-    {
-        $this->setQuotes();
-
-        return $this->quotes['single'][0];
-    }
-
-    public function getSingleClosingQuote()
-    {
-        $this->setQuotes();
-
-        return $this->quotes['single'][1];
-    }
-
-    public function assessOpeningQuote($preceding, $following, $wildcard = '"')
-    {
-        $probability = 0;
-
-        switch ($this->language) {
-            case 'de':
-                if (
-                    $wildcard === "'" &&
-                    preg_match('/^(n|ne|nen)\b/i', $following)
-                ) {
-                    $probability += -1;
-                }
-                break;
+        if (isset(self::$data[$locale])) {
+            return;
         }
 
-        return $probability;
-    }
+        $data = [];
+        $file = self::$locales[$locale] ?? null;
 
-    public function assessClosingQuote($preceding, $following, $wildcard = '"')
-    {
-        $probability = 0;
-
-        if (preg_match('/\d$/', $preceding)) {
-            $probability += -1;
+        if ($file && file_exists($file)) {
+            $data = json_decode(file_get_contents($file), true);
         }
 
-        switch ($this->language) {
-            case 'de':
-                if ($wildcard === "'" && preg_match('/[sßzx]$/i', $preceding)) {
-                    $probability += -0.5;
-                }
-                break;
-        }
-
-        return $probability;
+        self::$data[$locale] = array_merge(self::$defaults, $data);
     }
 
-    public function evaluateClosingQuotes($occurences, $wildcard = '"')
+    /**
+     * Returns the current locale.
+     */
+    public function get(): string
     {
-        $evaluation = [];
-
-        foreach ($occurences as $context) {
-            $evaluation[] = $this->assessClosingQuote(
-                $context['preceding'],
-                $context['following'],
-                $wildcard
-            );
-        }
-
-        return $evaluation;
+        return $this->locale;
     }
 
-    public function toString()
+    /**
+     * Returns the locale typographic settings, either all or just the
+     * specified key.
+     *
+     * @param $key The settings key.
+     */
+    public function data($key = null): mixed
     {
-        $string = $this->language;
+        $data = self::$data[$this->locale];
 
-        if ($this->region) {
-            $string .= '-' . $this->region;
+        if ($key) {
+            if (isset($data[$key])) {
+                return $data[$key];
+            } else {
+                return null;
+            }
         }
 
-        return $string;
+        return $data;
     }
 
-    public function __toString()
+    /**
+     * Returns the quote style of the current locale.
+     *
+     * @param $style The name of the quote style, either `default` or `alternatives`.
+     */
+    public function quotes(QuoteStyle $style = QuoteStyle::Default): array
     {
-        return $this->toString();
+        $data = $this->data('quotes');
+
+        return $data[$style->value] ?? null;
+    }
+
+    /**
+     * Matches the current locale with the given locale identifier.
+     */
+    public function matches(string $locale): bool
+    {
+        return $this->locale === $locale;
+    }
+
+    /**
+     * Returns the current locale string.
+     */
+    public function __toString(): string
+    {
+        return $this->locale;
     }
 }

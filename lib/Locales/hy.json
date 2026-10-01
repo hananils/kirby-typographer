@@ -1,0 +1,9 @@
+{
+    "name": "Armenian",
+    "code": "hy",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" }
+        }
+    }
+}

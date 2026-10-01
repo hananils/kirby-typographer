@@ -1,0 +1,14 @@
+{
+    "name": "Amharic",
+    "code": "am",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "‹", "closing": "›" }
+        },
+        "alternatives": {
+            "double": { "opening": "“", "closing": "”" },
+            "single": { "opening": "‘", "closing": "’" }
+        }
+    }
+}

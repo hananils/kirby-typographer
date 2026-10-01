@@ -1,8 +1,8 @@
 <?php
 
-namespace Hananils\Corrections;
+namespace Hananils\Typographer\Corrections;
 
-use Hananils\Correction;
+use Hananils\Typographer\Correction;
 
 class Primes extends Correction
 {
@@ -11,8 +11,16 @@ class Primes extends Correction
      * takes any left straight quotes that are left and are following a number
      * and converts them to primes.
      */
-    public $replacements = [
+    private $replacements = [
         "/(\d)(''|\")/im" => '$1″',
         "/(\d)'/im" => '$1′'
     ];
+
+    public function apply()
+    {
+        $this->toFormattableTexts()->replaceTextAll(
+            $this->replacements,
+            isRegEx: true
+        );
+    }
 }

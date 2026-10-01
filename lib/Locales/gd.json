@@ -1,0 +1,14 @@
+{
+    "name": "Scottish Gaelic",
+    "code": "gd",
+    "quotes": {
+        "default": {
+            "double": { "opening": "‘", "closing": "’" },
+            "single": { "opening": "“", "closing": "”" }
+        },
+        "alternatives": {
+            "double": { "opening": "“", "closing": "”" },
+            "single": { "opening": "‘", "closing": "’" }
+        }
+    }
+}

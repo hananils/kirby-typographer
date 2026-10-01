@@ -1,287 +1,111 @@
-![Kirby Typographer](.github/title.png)
+[![Typographer for Kirby CMS](header.png)](https://kirby.hananils.de/plugins/typographer)
 
-**Typographer** is a plugin for [Kirby 3](https://getkirby.com) to apply microtypographic rules to texts. It used `DomDocument` under the hood to understand the semantic of the given text and respecting `lang` attributes to adjust the used locale contextually.
+Typographer is a plugin that offers methods to apply advanced typographic rules to your content. Besides handling common cases like quotes, apostrophes or dashes out of the box, it allows for the creation of custom corrections and helps to typeset your content inside your templates and snippets smoothly.
 
-> [!NOTE]
-> **There is a large update coming for Kirby 5 this fall:**  
-> Please check out [kirby.hananils.de/plugins/typographer](https://kirby.hananils.de/plugins/typographer) for further information.
+> [!TIP]
+> Oh, hi, long time no see 👋 Typographer has been around for a long time but you’ve only ever seen version 0.2. This is version 4.0. Yes, that’s right. Things have changed, please do not directly update in case you used the old version before. Read the docs to see what changed first.
+> 
+> If you need DOM manipulation, please check out our new [Designer](https://kirby.hananils.test/plugins/designer) plugin.
 
-Typographer applies the following corrections:
+## More than just smart pants.
 
--   opening and closing quotes (primary and secondary)
--   apostrophes
--   primes
--   dashed
--   ellipses
--   multiplication signs
--   trademark signs
+Consistency and professional tone made easy and efficient for your editors: Fine-tune your Typographer setup with custom corrections to work hand-in-hand with an established style guide.
 
-Further more it applies Widont rules and detects abbreviations and long words.
+[Learn more about custom corrections](https://kirby.hananils.test/plugins/typographer/creating-custom-corrections).
 
-**Note:** Typographic rules often require an understanding of the underlying text which cannot be achieved automatically. Thus, the plugin will incorrectly match characters or apply incorrect rules. Good text layout still requires manual proofreading.
+### Hallo Welt! Hei verden! Merhaba dünya!
 
-Currently, Typographer offers custom rules for German, English and French. This plugin was created with a German language background and might not know yet about rules specific to other languages.
+Of international interest: Typographer currently bundles typographic rules for 70 locales. C’est génial, n’est-ce pas?
 
-## Examples
+[Browse The Long List of Languages](https://kirby.hananils.test/plugins/typographer/locales).
 
-```md
-"We are at 41° 43' 32.99"", said the captain while pointing on the map.
+## Included corrections
 
-<p lang="de">"Wir brauchen auch 'Zitate in Zitaten' - nicht, dass das untergeht!" ergänzte der Grafiker.</p>
+Typographer bundles a set of corrections that can be applied individually. If no corrections are applied, Typographer will back to following default set:
 
-The programmer added: "Can we please make sure that my code stays intact?" Of course, we can: `$test = "This is text in straight quotes with ... dots"`.
-```
+- [Abbreviations](https://kirby.hananils.test/plugins/typographer/included-corrections#abbreviations)
+- [Apostrophes](https://kirby.hananils.test/plugins/typographer/included-corrections#apostrophes)
+- [Caps](https://kirby.hananils.test/plugins/typographer/included-corrections#caps)
+- [Dashes](https://kirby.hananils.test/plugins/typographer/included-corrections#dashes)
+- [Ellipsis](https://kirby.hananils.test/plugins/typographer/included-corrections#ellipsis)
+- [Highlight](https://kirby.hananils.test/plugins/typographer/included-corrections#highlight)
+- [Links](https://kirby.hananils.test/plugins/typographer/included-corrections#links)
+- [Lists](https://kirby.hananils.test/plugins/typographer/included-corrections#lists)
+- [Math](https://kirby.hananils.test/plugins/typographer/included-corrections#math)
+- [Middot](https://kirby.hananils.test/plugins/typographer/included-corrections#middot)
+- [Permalinks](https://kirby.hananils.test/plugins/typographer/included-corrections#permalinks)
+- [Primes](https://kirby.hananils.test/plugins/typographer/included-corrections#primes)
+- [Quotes](https://kirby.hananils.test/plugins/typographer/included-corrections#quotes)
+- [Slashes](https://kirby.hananils.test/plugins/typographer/included-corrections#slashes)
+- [Titled lists](https://kirby.hananils.test/plugins/typographer/included-corrections#titled-lists)
+- [Trademarks](https://kirby.hananils.test/plugins/typographer/included-corrections#trademarks)
+- [Uuid](https://kirby.hananils.test/plugins/typographer/included-corrections#uuid)
 
-```php
-<?= $page->text()->typographer() ?>
-```
+In addition to these defaults, there are several optional corrections that can be applied manually:
 
-```html
-<p>“We are at 41° 43′ 32.99″”, said the captain while pointing on the map.</p>
+- [Currencies](https://kirby.hananils.test/plugins/typographer/included-corrections#currencies)
+- [Long words](https://kirby.hananils.test/plugins/typographer/included-corrections#long-words)
+- [Namespaces](https://kirby.hananils.test/plugins/typographer/included-corrections#namespaces)
+- [Punctuation](https://kirby.hananils.test/plugins/typographer/included-corrections#punctuation)
+- [Punctuation placement](https://kirby.hananils.test/plugins/typographer/included-corrections#punctuation-placement)
+- [Ranges](https://kirby.hananils.test/plugins/typographer/included-corrections#ranges)
+- [Short paragraphs](https://kirby.hananils.test/plugins/typographer/included-corrections#short-paragraphs)
+- [Widont](https://kirby.hananils.test/plugins/typographer/included-corrections#widont)
 
-<p lang="de">„Wir brauchen auch ‚Zitate in Zitaten‘ – nicht, dass das untergeht!“ ergänzte der Grafiker.</p>
-
-<p>The <span class="long-word">programmer</span> added: “Can we please make sure that my code stays intact?” Of course, we can: <code>$test = "This is text in straight quotes with ... dots"</code>.</p
-```
-
-Typographer also allows for additional content manipulations:
-
-```php
-<?= $page->text()->typographer()->filter('p[1]') ?>
-```
-
-```html
-<p>“We are at 41° 43′ 32.99″”, said the captain while pointing on the map.</p>
-```
+> \[!important\] Please note that this plugin makes use of the latest `Dom` additions in PHP 8.4 and their extensions in PHP 8.5. Thus **PHP 8.5 is a requirement** for this plugin.
 
 ## Installation
+
+By default, plugins in Kirby reside in a special folder located at `/site/plugins`. Each plugin is installed in its proprietary subfolder. This installation can be handled in four different ways: you can either install them manually or manage them using Kirby CLI, Git submodules or Composer. You can install Typographer either way and should choose the method suiting your project best.
+
+Please note that all examples given here assume you are using the default plugin root. [If you changed your plugin root](https://getkirby.com/docs/reference/system/roots/plugins), e. g. with a custom folder setup, you’ll also have to adjust the paths given in this guide. For further information on how to manage plugins, please read the [official Kirby plugin introduction](https://getkirby.com/docs/guide/plugins/plugin-basics).
 
 ### Download
 
 Download and copy this repository to `/site/plugins/typographer`.
 
+### Kirby CLI
+
+```shell
+kirby plugin:install hananils/kirby-typographer
+```
+
 ### Git submodule
 
-```
-git submodule add https://github.com/hananils/kirby-typographer.git site/plugins/typographer
+```bash
+git submodule add \
+    https://github.com/hananils/kirby-typographer.git \
+    site/plugins/typographer
 ```
 
 ### Composer
 
-```
+```shell
 composer require hananils/kirby-typographer
 ```
 
-# Methods
+## Documentation
 
-Typographer is available as a field method as well as a blocks method.
+[![Find all documentation at kirby.hananils.de](footer.png)](https://kirby.hananils.de/plugins/typographer)
 
-## $field->typographer($flow, $convert)
+Where possible, files contain inline annotations. For extended documentation, please visit our dedicated plugin site at [kirby.hananils.de/​plugins/​typographer](https://kirby.hananils.de/plugins/typographer).
 
-Applies typographic rules to the given field.
+### Guides
 
--   **`$flow`:** Determines whether the content is considered to be of block or inline flow. If no flow is set, the block or inline context is guessed from the field definition in the blueprint (this will reduce performance if used too often and on complex pages).
--   **`$convert`** Determines whether the content should be converted to Markdown before applying typographic rules, respecting the flow setting. Defaults to `true`.
+- [Using Typographer](https://kirby.hananils.de/plugins/typographer/initialising-typographer)
+- [Applying corrections](https://kirby.hananils.de/plugins/typographer/applying-corrections)
+- [Locales](https://kirby.hananils.de/plugins/typographer/locales)
+- [Included corrections](https://kirby.hananils.de/plugins/typographer/included-corrections)
+- [Custom corrections](https://kirby.hananils.de/plugins/typographer/creating-custom-corrections)
 
-## $blocks->typographer() or $block->typographer()
+### Reference
 
-Applies typographic rules to the blocks.
+- [Field Methods](https://kirby.hananils.de/plugins/typographer/field-methods)
+- [Blocks Methods](https://kirby.hananils.de/plugins/typographer/blocks-methods)
+- [Block Methods](https://kirby.hananils.de/plugins/typographer/block-methods)
+- [Helpers](https://kirby.hananils.de/plugins/typographer/helpers)
+- [Hooks](https://kirby.hananils.de/plugins/typographer/hooks)
 
-## Manipulations
+## License
 
-There are several methods to fine-tune the output that can be chained with this main method:
-
-### $field->typographer()->ignore($ignore)
-
-Sets elements that should be ignore when applying typographic changes, especially helpful for code block.
-
--   **`$ignore`:** Array of elements that should be skipped. Defaults to `['pre', 'code']`.
-
-### $field->typographer()->setAttributes($query, $attributes)
-
-Queries elements and sets the given attributes:
-
--   **`$query`:** The xPath query to find the elements.
--   **`$attributes`:** An array of attributes with the names as key.
-
-```php
-$page
-    ->text()
-    ->typographer()
-    ->setAttributes('p', [
-        'class' => 'typographic'
-    ]);
-```
-
-### $field->typographer()->setAttribute($query, $name, $value)
-
-Queries elements and sets a single attribute:
-
--   **`$query`:** The xPath query to find the elements.
--   **`$name`:** The attribute name.
--   **`$value`:** The attribute value.
-
-```php
-$page
-    ->text()
-    ->typographer()
-    ->setAttribute('p', 'class', 'typographic');
-```
-
-### $field->typographer()->rename($query, $name)
-
-Queries elements and changes their name:
-
--   **`$query`:** The xPath query to find the elements.
--   **`$name`:** The new element name.
-
-```php
-$page
-    ->text()
-    ->typographer()
-    ->rename('bold', 'strong');
-```
-
-### $field->typographer()->level($level)
-
-Changes the starting point of the headline hierarchy:
-
--   **`$level`:** The new starting point of the headline hierarchy. Defaults to `2`.
-
-```php
-// All h1 will be rendered as h3, all h2 will be rendered as h4 and so on …
-$page
-    ->text()
-    ->typographer()
-    ->level(3);
-```
-
-### $field->typographer()->filter($query)
-
-Filters the resulting markup by the given query:
-
--   **`$query`:** The xPath query to filter the output.
-
-```php
-// Returns the first paragraph only
-$page
-    ->text()
-    ->typographer()
-    ->filter('p[1]');
-```
-
-### $field->typographer()->options($options)
-
-Set options for the correction:
-
--   **`$options`:** An array of options to be passed to the corrections.
-
-See below for additional information.
-
-# Additional field methods
-
-## toDefinition()
-
-Field method returning the field definitions from the related blueprint.
-
-## toFlow($flow)
-
-Field method converting the given field value to block or inline content using Markdown based on the selected flow.
-
--   **`$flow`:** the used flow context, either `block` or `inline`. Defaults to `block`.
-
-# Helper
-
-## typographer($html, $flow = 'block', $locale = null)
-
-Helper which can be used with custom markup directly applying typographic rules to the given content:
-
--   **`$html`:** The HTML to be parsed. Expected to be valid.
--   **`$flow`:** Determines whether the content is considered to be of block or inline flow. Defaults to `block`.
--   **`$locale`:** The locale used to select the typographic rules, e. g. `de`, `de-CH`, `en-US`.
-
-# Handling hyphenation
-
-In recent years, browsers have become very good in hyphenating text if you set `hyphens: auto;` in your CSS. This helps a lot with responsive designs and headline on mobile. Nevertheless, setting `hyphens: auto;` often results in word breaks everywhere which will make text hard to read.
-
-Actually, all that's need is hyphenation on long words that might overflow. Thus, Typographer will wrap long word in `span` elements with the class `.long-word` which allows you to apply hyphenation to these long words only:
-
-```css
-.long-word {
-    hyphens: auto:
-}
-```
-
-Depending on your requirements, [vendor prefixes are needed to enable hyphenation](https://caniuse.com/?search=hyphen) in all browsers. Please also make sure to set the current language on your HTML nodes so that the correct dictionary is used by the browser. This can be done by specifying `lang` on your root `html` node, e. g. `<html lang="de">…</html>`.
-
-# Options
-
-Some corrections accept options for their transformations. You can either set options individually by calling the `options` method on the typographer object (see above) or you can define options globally by adding them to the Kirby configuration:
-
-```php
-'hananils.typographer' => [
-  'options' => [
-    // your options here
-  ]
-]
-```
-
-## Quotes
-
-For the German language, the quotes correction allows you to toggle alternative quotes, known as "französische Anführungszeichen" or "Guillemets", instead of the usual "Gänsefüßchen":
-
-```php
-'hananils.typographer' => [
-  'options' => [
-    'alternatives' => true // or 'guillemets' if you want to be more specific
-  ]
-]
-```
-
-You can also pass this to you Typographer object directly:
-
-```php
-$page
-    ->text()
-    ->typographer()
-    ->options([
-        'alternatives' => true
-    ]);
-```
-
-## Long words
-
-The correction that enables hyphenation of long words accepts an option for the word length. This is the minimum character count used to find long words:
-
-```php
-'hananils.typographer' => [
-  'options' => [
-    'word-length' => 10 // the default is 15
-  ]
-]
-```
-
-You can also pass this to you Typographer object directly:
-
-```php
-$page
-    ->text()
-    ->typographer()
-    ->options([
-        'word-length' => 10
-    ]);
-```
-
-# Inspiration and similar approaches
-
-There are a lot of different approaches to typography each suiting different needs, especially focussing on different languages. These libraries have been an inspiration for this plugin:
-
--   https://github.com/frankrausch/Typographizer (not PHP)
--   https://github.com/jolicode/JoliTypo (PHP)
--   https://github.com/davidmerfield/Typeset (JavaScript)
-
-We found these libraries in this very helpful collection by Frank Rausch: https://gist.github.com/frankrausch/1aa9c80741abd87a450a5bcb2a1687c2.
-
-# License
-
-This plugin is provided freely under the [MIT license](LICENSE.md) by [hana+nils · Büro für Gestaltung](https://hananils.de). We create visual designs for digital and analog media.
+This plugin is provided freely under the [MIT license](https://kirby.hananils.de/plugins/typographer/license) by [hana+nils · Büro für Gestaltung](https://kirby.hananils.de). We create visual designs for digital and analog media.

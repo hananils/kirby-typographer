@@ -1,0 +1,9 @@
+{
+    "name": "Georgian",
+    "code": "ka",
+    "quotes": {
+        "default": {
+            "double": { "opening": "„", "closing": "“" }
+        }
+    }
+}

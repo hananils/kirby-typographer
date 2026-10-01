@@ -1,0 +1,13 @@
+{
+    "name": "Ukrainian",
+    "code": "uk",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "“", "closing": "”" }
+        },
+        "alternatives": {
+            "double": { "opening": "„", "closing": "“" }
+        }
+    }
+}

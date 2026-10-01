@@ -1,0 +1,13 @@
+{
+    "name": "Belarusian",
+    "code": "be",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "„", "closing": "“" }
+        },
+        "alternatives": {
+            "double": { "opening": "„", "closing": "“" }
+        }
+    }
+}

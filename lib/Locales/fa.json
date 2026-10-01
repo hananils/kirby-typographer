@@ -1,0 +1,9 @@
+{
+    "name": "Persian",
+    "code": "fa",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" }
+        }
+    }
+}

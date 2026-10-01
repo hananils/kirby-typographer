@@ -1,0 +1,10 @@
+{
+    "name": "Italian, Switzerland",
+    "code": "it_CH",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "‹", "closing": "›" }
+        }
+    }
+}

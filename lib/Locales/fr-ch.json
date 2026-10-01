@@ -1,0 +1,10 @@
+{
+    "name": "French, Switzerland",
+    "code": "fr_CH",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" },
+            "single": { "opening": "‹", "closing": "›" }
+        }
+    }
+}

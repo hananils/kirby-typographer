@@ -1,0 +1,18 @@
+{
+    "name": "German",
+    "code": "de",
+    "quotes": {
+        "default": {
+            "double": { "opening": "„", "closing": "“" },
+            "single": { "opening": "‚", "closing": "‘" },
+            "omissions": {
+                "start": "/^(n|ne|nen)$/",
+                "end": "/(s|z|x|ß)$/"
+            }
+        },
+        "alternatives": {
+            "double": { "opening": "»", "closing": "«" },
+            "single": { "opening": "›", "closing": "‹" }
+        }
+    }
+}

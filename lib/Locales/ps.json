@@ -1,0 +1,9 @@
+{
+    "name": "Pashto",
+    "code": "ps",
+    "quotes": {
+        "default": {
+            "double": { "opening": "«", "closing": "»" }
+        }
+    }
+}
