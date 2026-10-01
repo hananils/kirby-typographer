@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'hananils/kirby-typographer',
-        'pretty_version' => '3.0.0',
-        'version' => '3.0.0.0',
+        'pretty_version' => '4.0.0',
+        'version' => '4.0.0.0',
         'reference' => null,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -13,7 +13,7 @@
         'hananils/document' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'd8f254e8443f8c605e8392d783238db9ae365ad3',
+            'reference' => 'df07fcdf1ead5166c4925028da7bdee011aeef46',
             'type' => 'library',
             'install_path' => __DIR__ . '/../hananils/document',
             'aliases' => array(
@@ -24,7 +24,7 @@
         'hananils/kirby-fields' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '2a647ab6dfac2cff03737df53b68bcb4b58e2b7a',
+            'reference' => 'd32d18c330faa503dff54fc66e12ac9b98782749',
             'type' => 'helper',
             'install_path' => __DIR__ . '/../hananils/kirby-fields',
             'aliases' => array(
@@ -35,7 +35,7 @@
         'hananils/kirby-plugins' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '22cc54a874937291cfd827826ae492810f3255a6',
+            'reference' => '8a6379b185df611cf2acfe705182a14777b7e2c9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../hananils/kirby-plugins',
             'aliases' => array(
@@ -44,8 +44,8 @@
             'dev_requirement' => false,
         ),
         'hananils/kirby-typographer' => array(
-            'pretty_version' => '3.0.0',
-            'version' => '3.0.0.0',
+            'pretty_version' => '4.0.0',
+            'version' => '4.0.0.0',
             'reference' => null,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',

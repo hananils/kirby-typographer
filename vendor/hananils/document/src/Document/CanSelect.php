@@ -47,6 +47,10 @@ trait CanSelect
         return $nodes;
     }
 
+    /**
+     * Finds all nodes matching the selector. Uses the given node as context or
+     * – if none given – the current document.
+     */
     public function querySelectorAll(
         string $expression,
         Element|null $node = null
@@ -62,6 +66,26 @@ trait CanSelect
         }
 
         return $nodes;
+    }
+
+    /**
+     * Finds the first node matching the selector. Uses the given node as context
+     * or – if none given – the current node or document depending on the parent
+     * class.
+     */
+    public function querySelector(
+        string $expression,
+        Element|null $node = null
+    ): Node|null {
+        if ($node === null && is_a($this, 'Hananils\Document\Node')) {
+            $node = $this->item();
+        }
+
+        if ($nodes = $this->querySelectorAll($expression, $node)) {
+            return $nodes->first();
+        }
+
+        return null;
     }
 
     /**
