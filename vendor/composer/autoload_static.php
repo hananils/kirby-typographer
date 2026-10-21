@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInitf6f63938a8f8db29a4f289a13fff2a97
 {
     public static $prefixLengthsPsr4 = array (
+        'K' =>
+        array (
+            'Kirby\\' => 6,
+        ),
         'H' =>
         array (
             'Hananils\\Typographer\\' => 21,
@@ -17,6 +21,10 @@ class ComposerStaticInitf6f63938a8f8db29a4f289a13fff2a97
     );
 
     public static $prefixDirsPsr4 = array (
+        'Kirby\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/getkirby/composer-installer/src',
+        ),
         'Hananils\\Typographer\\' =>
         array (
             0 => __DIR__ . '/../..' . '/lib',

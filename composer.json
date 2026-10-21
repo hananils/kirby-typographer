@@ -3,7 +3,7 @@
     "description": "Typographer is a plugin that offers methods to apply advanced typographic rules to your content. Besides handling common cases like quotes, apostrophes or dashes out of the box, it allows for the creation of custom corrections and helps to typeset your content inside your templates and snippets smoothly.",
     "license": "MIT",
     "type": "kirby-plugin",
-    "version": "4.0.4",
+    "version": "4.0.5",
     "authors": [
         {
             "name": "hana+nils · Büro für Gestaltung",
@@ -15,7 +15,8 @@
         "php": "^8.5",
         "hananils/document": "^2.0",
         "hananils/kirby-plugins": "^1.0",
-        "hananils/kirby-fields": "^1.0"
+        "hananils/kirby-fields": "^1.0",
+        "getkirby/composer-installer": "^1.2"
     },
     "require-dev": {
         "pestphp/pest": "^3.8"

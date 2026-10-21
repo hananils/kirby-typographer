@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Kirby\\' => array($vendorDir . '/getkirby/composer-installer/src'),
     'Hananils\\Typographer\\' => array($baseDir . '/lib'),
     'Hananils\\Plugins\\' => array($vendorDir . '/hananils/kirby-plugins/src'),
     'Hananils\\Fields\\' => array($vendorDir . '/hananils/kirby-fields/src'),
